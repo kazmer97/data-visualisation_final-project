@@ -1,0 +1,27 @@
+---
+title: "Data Visualisation Final Project"
+author: "Study Group 11: Nereid Kwok, Nisa Ozer, Lauren Wade, Thomas Giannetti-Fakhouri, Kazmer Nagy-Betegh, Chandrime Tolia"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: flatly
+    highlight: zenburn
+    number_sections: true
+    toc: yes
+    toc_float: yes
+---
+
+
+```{r}
+astronauts <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv')
+
+launches <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv")
+
+agencies <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/agencies.csv")
+```
+
+```{r}
+skimr::skim(astronauts)
+```
+
+
