@@ -1,0 +1,131 @@
+---
+title: "Data Visualisation Final Project"
+author: "Study Group 11: Nereid Kwok, Nisa Ozer, Lauren Wade, Thomas Giannetti-Fakhouri, Kazmer Nagy-Betegh, Chandrime Tolia"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: flatly
+    highlight: zenburn
+    number_sections: true
+    toc: yes
+    toc_float: yes
+---
+
+
+```{r libraries, include=FALSE}
+
+library(skimr)
+library(vroom)
+library(tidyverse)
+library(dplyr)
+library(ggthemes)
+library(gghighlight)
+library(plotly)
+library(patchwork)
+library(countrycode)
+```
+
+
+```{r}
+astronauts <- vroom('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv')
+
+launches <- vroom("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv")
+
+agencies <- vroom("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/agencies.csv")
+
+mission_success <- vroom(here::here("data","Space_Corrected.csv"))
+```
+
+```{r}
+skim(astronauts)
+```
+
+
+```{r}
+skim(launches)
+```
+
+
+```{r}
+skim(agencies)
+```
+
+```{r}
+mission_success <- select(mission_success, -c(1,2))
+
+state_names <- c("Iran","Isreal","Japan","India","North Korea","South Korea","Soviet Union","United Kingdom", "cayman Islands")
+
+```
+
+
+```{r space_race, fig.align='center', fig.height= 5, fig.width= 11}
+
+country_names <- c(US = "United States",
+                'F'  = "France",
+                BR = "Brazil",
+                CN = "China",
+                I = "italy",      
+                'I-ELDO' =  "NA",
+                'I-ESA' = "European Space Agency",
+                RU  = "Russia",
+                IR = "Iran",
+                IL = "Isreal",
+                J = "Japan",
+                IN = "India",
+                KR = "North Korea",
+                KP = "South Korea",
+                SU = "North Korean Space Agency",
+                UK = "United Kingdom",
+                CYM = "Cayman Islands")   
+
+launches <- launches %>% 
+  mutate(country_name = country_names[state_code])
+
+launches <- launches %>% 
+  mutate(agency = case_when(is.na(agency) ~ state_code,
+                            TRUE ~ agency))
+
+space_race <- launches %>% 
+  # filter(state_code %in% c("US", "SU", "RU")) %>% 
+  group_by(launch_year, agency) %>% 
+  summarise(state_code, num_launches = n()) %>% 
+  ungroup()
+  
+
+
+launchs_per_year_US_SU <- space_race %>% 
+  filter(state_code %in% c("US", "SU", "RU")) %>% 
+  ggplot( aes(x = launch_year,
+              y = num_launches))+
+  geom_point(aes(color = state_code))+
+  geom_line(aes(color = state_code))+
+  gghighlight(state_code %in% c("US","SU","RU"))+
+  theme_minimal()+
+  labs(title = "United States and Soviet Union (Russia) Space Race",
+       x = "",
+       y = "launches/year")+
+  scale_color_brewer(palette = "YIGnBu")
+
+
+
+launchs_per_year_non_us_su <- space_race %>% 
+  ggplot(aes(x = launch_year,
+              y = num_launches))+
+  geom_point(aes(color = state_code))+
+  geom_line(aes(color = state_code))+
+  gghighlight(!state_code %in% c("US","SU","RU"))+
+  theme_minimal()+
+  labs(title = "Countries joining Space Exploration",
+       x = "",
+       y = "launches/year")+
+  scale_color_brewer(palette = "YIGnBu")
+
+launchs_per_year_US_SU | launchs_per_year_non_us_su
+
+```
+
+```{r space_race success}
+
+
+```
+

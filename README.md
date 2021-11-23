@@ -62,4 +62,14 @@ Explore correlations between space agency and rocket technology used between the
 
 Possibly a model to predict/understand how factors like country, age, etc affect/predict the number of missions an astronaut will go on.
 
+# Data Sources
+Tidy tuesday challenge link: https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-07-14
+
+**Astronouts**: https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv
+**launches**: https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv
+**agencies**: https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/agencies.csv
+**mission success**: https://www.kaggle.com/agirlcoding/all-space-missions-from-1957
+
+
+
 
