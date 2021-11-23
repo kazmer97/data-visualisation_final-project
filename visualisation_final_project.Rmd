@@ -12,16 +12,56 @@ output:
 ---
 
 
+```{r libraries, include=FALSE}
+
+library(skimr)
+library(vroom)
+library(tidyverse)
+library(dplyr)
+library(ggthemes)
+
+```
+
+
 ```{r}
-astronauts <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv')
+astronauts <- vroom('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv')
 
-launches <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv")
+launches <- vroom("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv")
 
-agencies <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/agencies.csv")
+agencies <- vroom("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/agencies.csv")
 ```
 
 ```{r}
-skimr::skim(astronauts)
+skim(astronauts)
 ```
 
+
+```{r}
+skim(launches)
+```
+
+
+```{r}
+skim(agencies)
+```
+
+```{r space_race}
+
+space_race <- launches %>% 
+  group_by(launch_year, agency) %>% 
+  summarise(num_launches = n()) %>% 
+  ungroup()
+
+
+launchs_per_year <- ggplot(space_race, aes(x = launch_year,
+                                           y = num_launches))+
+  geom_point(aes(color = agency))+
+  geom_line(aes(color = agency))+
+  theme_minimal()
+
+
+launchs_per_year
+
+
+```
 
