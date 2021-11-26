@@ -23,6 +23,10 @@ library(gghighlight)
 library(plotly)
 library(patchwork)
 library(countrycode)
+library(jpeg)
+library(png)
+library(grid)
+
 ```
 
 
@@ -53,19 +57,22 @@ skim(agencies)
 ```{r}
 mission_success <- select(mission_success, -c(1,2))
 
-state_names <- c("Iran","Isreal","Japan","India","North Korea","South Korea","Soviet Union","United Kingdom", "cayman Islands")
+mission_success <- mission_success %>% 
+  janitor::clean_names() %>% 
+  mutate(datum = as.Date(mission_success$Datum, format = "%a %b %d, %Y"))
 
+
+launches <-  launches %>% 
+  left_join(mission_success, by = c("launch_date" = "datum"))
 ```
 
 
-```{r space_race, fig.align='center', fig.height= 5, fig.width= 11}
-
+```{r}
 country_names <- c(US = "United States",
                 'F'  = "France",
                 BR = "Brazil",
                 CN = "China",
                 I = "italy",      
-                'I-ELDO' =  "NA",
                 'I-ESA' = "European Space Agency",
                 RU  = "Russia",
                 IR = "Iran",
@@ -74,9 +81,31 @@ country_names <- c(US = "United States",
                 IN = "India",
                 KR = "North Korea",
                 KP = "South Korea",
-                SU = "North Korean Space Agency",
+                SU = "Soviet Union",
                 UK = "United Kingdom",
-                CYM = "Cayman Islands")   
+                CYM = "Cayman Islands",
+                'I-ELDO' = "European Launcher Development Organisation")  
+
+
+country_colors <- c(US = "blue",
+                    'F'  = "skyblue",
+                    BR = "limegreen",
+                    CN = "red3",
+                    I = "lightgreen",      
+                    'I-ESA' = "plum1",
+                    RU  = "tomato",
+                    IR = "lightgoldenrod",
+                    IL = "tan2",
+                    J = "mistyrose",
+                    IN = "",
+                    KR = "North Korea",
+                    KP = "South Korea",
+                    SU = "Soviet Union",
+                    UK = "United Kingdom",
+                    CYM = "Cayman Islands",
+                    'I-ELDO' = "European Launcher Development Organisation")
+
+
 
 launches <- launches %>% 
   mutate(country_name = country_names[state_code])
@@ -85,10 +114,18 @@ launches <- launches %>%
   mutate(agency = case_when(is.na(agency) ~ state_code,
                             TRUE ~ agency))
 
+```
+
+
+```{r space_race, fig.align='center', fig.height= 5, fig.width= 11}
+
+launches %>% 
+  filter(country_name == "NA")
+
 space_race <- launches %>% 
   # filter(state_code %in% c("US", "SU", "RU")) %>% 
-  group_by(launch_year, agency) %>% 
-  summarise(state_code, num_launches = n()) %>% 
+  group_by(launch_year, country_name) %>% 
+  summarise(state_code, country_name, num_launches = n()) %>% 
   ungroup()
   
 
@@ -97,35 +134,163 @@ launchs_per_year_US_SU <- space_race %>%
   filter(state_code %in% c("US", "SU", "RU")) %>% 
   ggplot( aes(x = launch_year,
               y = num_launches))+
-  geom_point(aes(color = state_code))+
-  geom_line(aes(color = state_code))+
+  geom_point(aes(color = country_name))+
+  geom_line(aes(color = country_name))+
   gghighlight(state_code %in% c("US","SU","RU"))+
   theme_minimal()+
   labs(title = "United States and Soviet Union (Russia) Space Race",
        x = "",
-       y = "launches/year")+
-  scale_color_brewer(palette = "YIGnBu")
+       y = "launches/year")
+  # scale_color_manual(values = country_colors)
 
 
 
 launchs_per_year_non_us_su <- space_race %>% 
   ggplot(aes(x = launch_year,
               y = num_launches))+
-  geom_point(aes(color = state_code))+
-  geom_line(aes(color = state_code))+
+  geom_point(aes(color = country_name))+
+  geom_line(aes(color = country_name))+
   gghighlight(!state_code %in% c("US","SU","RU"))+
   theme_minimal()+
   labs(title = "Countries joining Space Exploration",
        x = "",
-       y = "launches/year")+
-  scale_color_brewer(palette = "YIGnBu")
+       y = "launches/year")
+  # scale_color_manual(values = country_colors)
 
 launchs_per_year_US_SU | launchs_per_year_non_us_su
 
 ```
 
-```{r space_race success}
+```{r space_race,  fig.align='center', fig.height= 5, fig.width= 11}
 
+img <- readJPEG(here::here("data/milky.jpg"))
+
+g <- rasterGrob(img, interpolate=TRUE)
+
+space_race_dates <- space_race %>% 
+  filter(state_code %in% c("US", "SU", "RU")) %>% 
+  ggplot( aes(x = launch_year,
+              y = num_launches))+
+  geom_point(aes(color = country_name))+
+  geom_line(aes(color = country_name))+
+  gghighlight(state_code %in% c("US","SU","RU"))+
+  theme_minimal()+
+  labs(title = "1957 - 1969 Space Race",
+       x = "",
+       y = "launches/year")+
+  annotate("rect", xmin = 1957, xmax = 1969, ymin = 0, ymax = 110,
+           alpha = 0.3, fill = "skyblue")
+
+
+space_race_dates
+```
+```{r space race success ,fig.align='center', fig.height= 5, fig.width= 11}
+
+
+space_race_mission_success <- launches %>% 
+  filter(state_code %in% c("US", "SU", "RU")) %>%
+  filter(launch_year < 1970) %>% 
+  group_by(launch_year, country_name, category) %>% 
+  summarise(n_missions = n()) %>% 
+  mutate(prc_missions = round(n_missions/sum(n_missions)*100,2)) %>% 
+  ggplot(aes(x = country_name,
+              y = n_missions))+
+  geom_col(aes(fill = category))+
+  geom_text(aes(x = country_name,
+                y = n_missions,
+                label = paste0(prc_missions,"%"),
+                group = category),
+            position=position_stack(vjust=0.5))+
+  theme_minimal()+
+  labs(title = "1957 - 1969 Space Race success Rate",
+       x = "",
+       y = "launches/year",
+       fill = "")+
+  facet_grid(~launch_year)+
+  scale_fill_manual(label = c("Failed Mission", "Succesful Mission"),
+                    values = c("tomato","springgreen4"))+
+  theme(axis.text.x = element_text(angle= 45, ))
+
+space_race_mission_success
+
+
+
+
+space_race_mission_success_values <- launches %>% 
+  group_by(launch_year, country_name, category) %>% 
+  summarise(n_missions = n()) %>% 
+  mutate(mission_ssuccess_rate = round(n_missions/sum(n_missions)*100,2)) %>% 
+  ungroup() %>% 
+  filter(category == "O") %>% 
+  select(-n_missions, -category)
+
+launches <- launches %>% 
+  left_join(space_race_mission_success_values, by = c("country_name" = "country_name","launch_year" = "launch_year"))
+    
+```
+
+```{r space race key dates, fig.align='center', fig.height= 5, fig.width= 11}
+
+img <- readJPEG(here::here("data/laika.jpg"))
+
+g <- rasterGrob(img, interpolate=TRUE)
+
+
+img <- readJPEG(here::here("data/alex.jpg"))
+
+g2 <- rasterGrob(img, interpolate=TRUE)
+
+test <- launches %>% 
+  filter(state_code %in% c("US", "SU", "RU")) %>% 
+  filter(launch_year < 1970) %>% 
+  group_by(launch_year, country_name) %>% 
+  summarise(mission_ssuccess_rate, launch_year, country_name, num_launches = n()) %>% 
+  ggplot( aes(x = launch_year,
+              y = num_launches,
+              label = mission_ssuccess_rate))+
+  annotate("rect", xmin = 1957, xmax = 1969, ymin = 0, ymax = 150,
+           alpha = 0.3, fill = "skyblue")+
+  
+  annotation_custom(g, xmin=1955, xmax=1959, ymin=57, ymax=80)+
+  annotate("segment", x = 1957, y = 0, xend = 1957, yend = 50 ,color = "tomato")+
+  annotate("text", x = 1957, y = 55, label = "Laika in Space",color = "tomato")+
+  
+  annotate("segment", x = 1961, y = 0, xend = 1961, yend = 70 , color = "tomato")+
+  annotate("text", x = 1961, y = 75, label = "Yuri Gagarin in Space", color = "tomato")+
+  
+  annotate("segment", x = 1963, y = 0, xend = 1963, yend = 90 , color = "tomato")+
+  annotate("text", x = 1963, y = 95, label = "Valentina Tereshkova first woman in Space", color = "tomato")+
+  
+  annotation_custom(g, xmin=1955, xmax=195, ymin=57, ymax=80)+
+  annotate("segment", x = 1965, y = 0, xend = 1965, yend = 100 , color = "tomato")+
+  annotate("text", x = 1965, y = 105, label = " Alexei Leonov leaves spacecrafts and has first spacewalk", color = "tomato")+
+  
+  annotate("segment", x = 1967, y = 0, xend = 1967, yend = 110 , color = "black")+
+  annotate("text", x = 1967, y = 115, label = "Deadliest Year for both Sides", color = "black")+
+  
+  annotate("segment", x = 1968, y = 0, xend = 1968, yend = 120 , color = "blue")+
+  annotate("text", x = 1968, y = 125, label = "Apollo 8 first human crewed spacecraft to reach the moon, orbit, and return to earth", color = "blue", hjust = .8)+
+  
+  annotate("segment", x = 1969, y = 0, xend = 1969, yend = 130 , color = "blue")+
+  annotate("text", x = 1969, y = 135, label = "First men to walk on the moon - American victory", color = "blue", hjust = 1)+
+  
+  geom_point(aes(color = country_name))+
+  geom_line(aes(color = country_name))+
+  geom_text(aes(x = launch_year,
+              y = num_launches,
+              label = paste0(mission_ssuccess_rate,"%")),
+            vjust = -1)+
+  theme_minimal()+
+  labs(title = "1957 - 1969 Space Race",
+       subtitle = "Percentages indicate the success rate of launches in each year",
+       x = "",
+       y = "launches/year",
+       color = "")+
+  xlim(1955,1972)+
+  scale_x_continuous(breaks = scales::pretty_breaks(12))
+  
+
+test
 
 ```
 
