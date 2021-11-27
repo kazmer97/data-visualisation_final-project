@@ -214,6 +214,51 @@ space_race_mission_success <- launches %>%
 space_race_mission_success
 
 
+age <- astronauts %>% 
+  mutate(age_at_mission = year_of_mission - year_of_birth) %>% 
+  select(age_at_mission, year_of_mission, year_of_birth, name)
+
+age_first <- age %>% 
+  group_by(name) %>% 
+  summarise(age_at_mission = min(age_at_mission))
+
+#age at their first mission, when they become astranauts
+age_first_plot <- age_first %>% 
+  ggplot(aes( x = age_at_mission )) +
+  geom_histogram()+
+  labs(title = "Age distribution of Astronauts on Their First Mission",
+       subtitle = "Age taken for each astronaut at the time of their first mission") +
+  theme_minimal()
+ 
+age_first_plot
+
+#general age distribution in the industry
+age_plot <- age %>% 
+  ggplot(aes( x = age_at_mission )) +
+  geom_histogram() +
+  labs(title = "Age distribution of Astronauts",
+       subtitle = "Age taken for each astronaut at time of every mission") +
+  theme_minimal() + 
+  annotate("text", x = 77, y = 15, label = "John H. Glenn jr.", size = 4)
+ 
+age_plot
+```
+```{r fig.align='center', fig.height= 5, fig.width= 11}
+
+gender_count <- astronauts %>% 
+    group_by(sex, year_of_mission) %>% 
+    count(year_of_mission)
+
+female_male <- gender_count %>% 
+  ggplot(aes(x = year_of_mission, y = n, fill = sex)) +
+  geom_col() +
+  labs(title = "Number of Male and Female Astranouts Launched into space by year")+
+  theme_minimal()
+female_male_annotated <- female_male + 
+  annotate("text", x = 1965, y = 25, label = "Valentina Tereshkova", size = 3) + 
+  annotate("segment", x = 1965, xend = 1963, y = 23,  yend = 6, colour = "black", size = 0.5 , arrow = arrow() )
+
+female_male_annotated
 
 
 space_race_mission_success_values <- launches %>% 
