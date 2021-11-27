@@ -43,7 +43,7 @@ US Launches
 1989: Private commercial Launches starts
 2012: Barely any state launches
 
-```{r}
+```{r,fig.align='center', fig.height= 5, fig.width= 11}
  launches %>% 
   filter(state_code == "US") %>% 
   mutate(agency_type = ifelse(as.character(agency_type) == "startup", "private", as.character(agency_type))) %>%  # combine startup and private
@@ -58,18 +58,18 @@ US Launches
   geom_col(width = 0.8)+
   geom_segment(aes(x = 1966, y = 85, xend = 1966, yend = 78),color = "royalblue",
                   arrow = arrow(length = unit(0.15, "cm")))+
-  geom_segment(aes(x = 1986, y = 40, xend = 1986, yend = 20),color = "indianred",
+  geom_segment(aes(x = 1986, y = 40, xend = 1986, yend = 15),color = "indianred",
                   arrow = arrow(length = unit(0.15, "cm")))+
-  geom_segment(aes(x = 1988.5, y = 60, xend = 1988.5, yend = 20),color = "grey40",
+  geom_segment(aes(x = 1989, y = 60, xend = 1989, yend = 20),color = "grey40",
                   arrow = arrow(length = unit(0.15, "cm")))+
   geom_segment(aes(x = 2012, y = 42, xend = 2012, yend = 20),color = "royalblue",
                   arrow = arrow(length = unit(0.15, "cm")))+
-  annotate("text", x=1966, y=88, label= "1966: Highest State Launches",size=2.5, color="royalblue3") +
-  annotate("text", x=1985, y=48, label= "1986:\n Challenger \n Explosion",size=2.5, color="indianred3") +
-  annotate("text", x=1988.5, y=63, label= "1989: Private Launches Begins",size=2.5, color="grey30") +
-  annotate("text", x=2012, y=45, label= "2012: State Launches Faded",size=2.5, color="royalblue3") +
-  annotate("text", x=1960, y=71, label= "High failure rates \n in early years",size=2.3,color="lightblue4") +
-  labs(title = "US State Launches Falls and Private Launches Rises",
+  annotate("text", x=1966, y=88, label= "1966: Highest State Launches",size=3.5, color="royalblue3") +
+  annotate("text", x=1986, y=48, label= "1986:\n Challenger \n Explosion",size=3.5, color="indianred3") +
+  annotate("text", x=1989, y=63, label= "1989: Private Launches Begins",size=3.5, color="grey30") +
+  annotate("text", x=2012, y=45, label= "2012: State Launches Faded",size=3.5, color="royalblue3") +
+  annotate("text", x=1959, y=69, label= "High failure rates \n in early years",size=3.5,color="lightblue4") +
+  labs(title = "US State Launches Falls while Private Launches Rises",
        subtitle = "US State and Private Launches by Success",
        x="Year",
        y="Launches",
@@ -83,9 +83,46 @@ US Launches
   theme(legend.title = element_text( size=8), legend.text=element_text(size=8), legend.background = element_rect(color = NA))
 
 ```
-state and private launches success/failure rate (spaceX)
-NASA fails, budget cut, 
-blow stuff up cheaper
+
+General: High spending/budget during Space Race. Drastic decrease of spending/budget once space is over. 
+US-USSR Space Race: Budget higher than actual spending (underbudget), NASA is too ambitious 
+2012 paused launches: Budget are increasing, ...
+
+
+```{r,fig.align='center', fig.height= 5, fig.width= 11}
+# Import and clean Nasa Spending Data
+nasa_spending <- vroom(here::here("data","nasa_budget.csv"))
+nasa_spending <- nasa_spending %>% 
+  select(1:6) %>%  # select non empty rows
+  janitor::clean_names() %>% 
+  mutate(request = as.numeric(request),
+         actual = as.numeric(actual))
+
+# Graph of NASA actual vs budget spending
+nasa_spending %>% 
+  ggplot(aes(x=fiscal_year))+
+  geom_line(data=subset(nasa_spending, fiscal_year>=2021),aes(y=request),linetype=2,color="royalblue",size=1) +
+  geom_line(data=subset(nasa_spending, fiscal_year<=2021),aes(y=request),linetype=1,color="orchid") +
+  geom_line(aes(y=actual),size=1,color="royalblue")+
+  geom_vline(xintercept = 2012,color="grey50",linetype="dashed")+
+  geom_vline(xintercept = 1959,color="grey50",linetype="dashed")+
+  geom_vline(xintercept = 1975,color="grey50",linetype="dashed")+
+  geom_ribbon(aes(ymin=request, ymax=pmax(actual,request)),fill="red", alpha = 0.3) +
+  geom_ribbon(aes(ymin=pmin(actual,request), ymax=request), fill="turquoise4", alpha = 0.3)+
+  annotate("rect", xmin = 1959, xmax = 1975, ymin = -Inf, ymax = Inf, fill = "grey", alpha = 0.1) +
+  annotate("rect", xmin = 2021, xmax = 2026, ymin = -Inf, ymax = Inf, fill = "wheat", alpha = 0.3)+
+  annotate("text", x=2023.6, y=3550, label= "Forecasted \n Budget",size=3.1, color="royalblue3") +
+  annotate("text", x=2012.1, y=500, label= " NASA paused \n self-launching \n missions from 2012",size=3.1, color="grey20",hjust = 0) +
+  annotate("text", x=1967, y=300, label= "US-USSR Space Race",size=3.5, color="grey20") +
+  labs(title = "NASA Budget vs Actual Spending",
+       subtitle = "NASA Spending Compared to Budget (Inflation Adjusted)",
+       x="Year",
+       y="USD (Million)")+
+  theme_clean()
+
+
+
+```
 
 
 
