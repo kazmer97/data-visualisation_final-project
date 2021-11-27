@@ -3,14 +3,18 @@ title: "Data Visualisation Final Project"
 author: "Study Group 11: Nereid Kwok, Nisa Ozer, Lauren Wade, Thomas Giannetti-Fakhouri, Kazmer Nagy-Betegh, Chandrime Tolia"
 date: "`r Sys.Date()`"
 output:
-  html_document:
-    theme: flatly
-    highlight: zenburn
-    number_sections: true
-    toc: yes
-    toc_float: yes
+  powerpoint_presentation:
+   reference_doc: reference_doc.pptx
+  
+
 ---
 
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,fig.align = 'left', message = FALSE, echo = FALSE, results = FALSE, warning = FALSE
+)
+```
 
 ```{r libraries, include=FALSE}
 
@@ -117,7 +121,9 @@ launches <- launches %>%
 ```
 
 
-```{r space_race, fig.align='center', fig.height= 5, fig.width= 11, echo=FALSE}
+# Slide 1
+
+```{r space_race1, fig.height= 5, fig.width= 11}
 
 launches %>% 
   filter(country_name == "NA")
@@ -157,11 +163,13 @@ launchs_per_year_non_us_su <- space_race %>%
        y = "launches/year")
   # scale_color_manual(values = country_colors)
 
-launchs_per_year_US_SU | launchs_per_year_non_us_su
+launchs_per_year_US_SU  | launchs_per_year_non_us_su
 
 ```
 
-```{r space_race,  fig.align='center', fig.height= 5, fig.width= 11, echo=FALSE}
+# Slide 2
+
+```{r space_race, fig.height= 5, fig.width= 11}
 
 img <- readJPEG(here::here("data/milky.jpg"))
 
@@ -184,6 +192,9 @@ space_race_dates <- space_race %>%
 
 space_race_dates
 ```
+
+# Slide 3
+
 ```{r space race success ,fig.align='center', fig.height= 5, fig.width= 11, echo=FALSE}
 
 
@@ -214,7 +225,9 @@ space_race_mission_success <- launches %>%
 space_race_mission_success
 ```
 
-```{r space_race success}
+
+# Slide 4
+```{r space_race success, fig.height= 5, fig.width= 11}
 age <- astronauts %>% 
   mutate(age_at_mission = year_of_mission - year_of_birth) %>% 
   select(age_at_mission, year_of_mission, year_of_birth, name) %>%
@@ -239,8 +252,7 @@ age_first_plot <- age_first %>%
        y="Number of Austronauts") +
   facet_wrap(~decade)+
   theme_minimal()
- 
-age_first_plot
+
 
 #general age distribution in the industry
 age_plot <- age %>% 
@@ -253,9 +265,9 @@ age_plot <- age %>%
   theme_minimal() +
   facet_wrap(~decade)
  
-age_plot
+age_first_plot / age_plot
 ```
-
+# Slide 5
 
 ```{r fig.align='center', fig.height= 5, fig.width= 11}
 
@@ -292,6 +304,8 @@ launches <- launches %>%
   left_join(space_race_mission_success_values, by = c("country_name" = "country_name","launch_year" = "launch_year"))
     
 ```
+# Slide 5
+
 
 ```{r space race key dates, fig.align='center', fig.height= 5, fig.width= 11, echo=FALSE}
 
@@ -363,6 +377,8 @@ launches %>%
 
 ```
 
+
+# Slide
 ```{r space walk record holders, echo=FALSE}
 
 astronauts %>% 
@@ -390,10 +406,7 @@ astronauts %>%
 ```
 
 
-```{r}
-
-```
-
+# Slide
 US Launches 
 
 1966: Peaked state launches
@@ -432,7 +445,7 @@ US Launches
        x="Year",
        y="Launches",
        fill="Agency Success")+
-  theme_clean()+
+  theme_minimal()+
   scale_fill_manual("Agency Success", 
                     values = c("State - Failure" = "lightblue", 
                                "State - Success" = "dodgerblue",
@@ -446,7 +459,7 @@ General: High spending/budget during Space Race. Drastic decrease of spending/bu
 US-USSR Space Race: Budget higher than actual spending (underbudget), NASA is too ambitious 
 2012 paused launches: Budget are increasing, ...
 
-
+# Slide 
 ```{r,fig.align='center', fig.height= 5, fig.width= 11}
 # Import and clean Nasa Spending Data
 nasa_spending <- vroom(here::here("data","nasa_budget.csv"))
@@ -476,7 +489,7 @@ nasa_spending %>%
        subtitle = "NASA Spending Compared to Budget (Inflation Adjusted)",
        x="Year",
        y="USD (Million)")+
-  theme_clean()
+  theme_minimal()
 
 ```
 state and private launches success/failure rate (spaceX)
