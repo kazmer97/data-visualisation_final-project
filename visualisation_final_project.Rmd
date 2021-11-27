@@ -30,7 +30,7 @@ library(grid)
 ```
 
 
-```{r}
+```{r echo=FALSE, include=FALSE}
 astronauts <- vroom('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv')
 
 launches <- vroom("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv")
@@ -40,21 +40,21 @@ agencies <- vroom("https://raw.githubusercontent.com/rfordatascience/tidytuesday
 mission_success <- vroom(here::here("data","Space_Corrected.csv"))
 ```
 
-```{r}
+```{r echo=FALSE, include=FALSE}
 skim(astronauts)
 ```
 
 
-```{r}
+```{r echo=FALSE, include=FALSE}
 skim(launches)
 ```
 
 
-```{r}
+```{r echo=FALSE, include=FALSE}
 skim(agencies)
 ```
 
-```{r}
+```{r echo=FALSE, include=FALSE}
 mission_success <- select(mission_success, -c(1,2))
 
 mission_success <- mission_success %>% 
@@ -67,7 +67,7 @@ launches <-  launches %>%
 ```
 
 
-```{r}
+```{r, echo=FALSE, include=FALSE}
 country_names <- c(US = "United States",
                 'F'  = "France",
                 BR = "Brazil",
@@ -117,7 +117,7 @@ launches <- launches %>%
 ```
 
 
-```{r space_race, fig.align='center', fig.height= 5, fig.width= 11}
+```{r space_race, fig.align='center', fig.height= 5, fig.width= 11, echo=FALSE}
 
 launches %>% 
   filter(country_name == "NA")
@@ -161,7 +161,7 @@ launchs_per_year_US_SU | launchs_per_year_non_us_su
 
 ```
 
-```{r space_race,  fig.align='center', fig.height= 5, fig.width= 11}
+```{r space_race,  fig.align='center', fig.height= 5, fig.width= 11, echo=FALSE}
 
 img <- readJPEG(here::here("data/milky.jpg"))
 
@@ -184,7 +184,7 @@ space_race_dates <- space_race %>%
 
 space_race_dates
 ```
-```{r space race success ,fig.align='center', fig.height= 5, fig.width= 11}
+```{r space race success ,fig.align='center', fig.height= 5, fig.width= 11, echo=FALSE}
 
 
 space_race_mission_success <- launches %>% 
@@ -229,7 +229,7 @@ launches <- launches %>%
     
 ```
 
-```{r space race key dates, fig.align='center', fig.height= 5, fig.width= 11}
+```{r space race key dates, fig.align='center', fig.height= 5, fig.width= 11, echo=FALSE}
 
 img <- readJPEG(here::here("data/laika.jpg"))
 
@@ -240,7 +240,11 @@ img <- readJPEG(here::here("data/alex.jpg"))
 
 g2 <- rasterGrob(img, interpolate=TRUE)
 
-test <- launches %>% 
+img <- readJPEG(here::here("data/moon.jpg"))
+
+g3 <- rasterGrob(img, interpolate=TRUE)
+
+launches %>% 
   filter(state_code %in% c("US", "SU", "RU")) %>% 
   filter(launch_year < 1970) %>% 
   group_by(launch_year, country_name) %>% 
@@ -248,7 +252,8 @@ test <- launches %>%
   ggplot( aes(x = launch_year,
               y = num_launches,
               label = mission_ssuccess_rate))+
-  annotate("rect", xmin = 1957, xmax = 1969, ymin = 0, ymax = 150,
+  
+  annotate("rect", xmin = 1957, xmax = 1969, ymin = 0, ymax = 180,
            alpha = 0.3, fill = "skyblue")+
   
   annotation_custom(g, xmin=1955, xmax=1959, ymin=57, ymax=80)+
@@ -261,18 +266,19 @@ test <- launches %>%
   annotate("segment", x = 1963, y = 0, xend = 1963, yend = 90 , color = "tomato")+
   annotate("text", x = 1963, y = 95, label = "Valentina Tereshkova first woman in Space", color = "tomato")+
   
-  annotation_custom(g, xmin=1955, xmax=195, ymin=57, ymax=80)+
+  annotation_custom(g2, xmin=1964, xmax=1966, ymin=108, ymax=128)+
   annotate("segment", x = 1965, y = 0, xend = 1965, yend = 100 , color = "tomato")+
   annotate("text", x = 1965, y = 105, label = " Alexei Leonov leaves spacecrafts and has first spacewalk", color = "tomato")+
   
   annotate("segment", x = 1967, y = 0, xend = 1967, yend = 110 , color = "black")+
   annotate("text", x = 1967, y = 115, label = "Deadliest Year for both Sides", color = "black")+
   
-  annotate("segment", x = 1968, y = 0, xend = 1968, yend = 120 , color = "blue")+
-  annotate("text", x = 1968, y = 125, label = "Apollo 8 first human crewed spacecraft to reach the moon, orbit, and return to earth", color = "blue", hjust = .8)+
+  annotate("segment", x = 1968, y = 0, xend = 1968, yend = 130 , color = "blue")+
+  annotate("text", x = 1968, y = 132, label = "Apollo 8 first human crewed spacecraft to reach the moon, orbit, and return to earth", color = "blue", hjust = .8)+
   
-  annotate("segment", x = 1969, y = 0, xend = 1969, yend = 130 , color = "blue")+
-  annotate("text", x = 1969, y = 135, label = "First men to walk on the moon - American victory", color = "blue", hjust = 1)+
+  annotation_custom(g3, xmin=1968, xmax=1969, ymin=142 ,ymax=172)+
+  annotate("segment", x = 1969, y = 0, xend = 1969, yend = 135 , color = "blue")+
+  annotate("text", x = 1969, y = 140, label = "First men to walk on the moon - American victory", color = "blue", hjust = 1)+
   
   geom_point(aes(color = country_name))+
   geom_line(aes(color = country_name))+
@@ -287,10 +293,40 @@ test <- launches %>%
        y = "launches/year",
        color = "")+
   xlim(1955,1972)+
+  ylim(0,180)+
   scale_x_continuous(breaks = scales::pretty_breaks(12))
   
 
-test
+```
+
+```{r space walk record holders, echo=FALSE}
+
+astronauts %>% 
+  group_by(name) %>% 
+  distinct(nationality, total_eva_hrs) %>% 
+  ungroup() %>% 
+  slice_max(order_by = total_eva_hrs, n=15, with_ties = TRUE) %>% 
+  ggplot()+
+  geom_col(aes(x = total_eva_hrs,
+             y = reorder(name,total_eva_hrs),
+             fill = nationality))+
+  geom_text(aes(x = total_eva_hrs,
+             y = reorder(name,total_eva_hrs),
+             label = total_eva_hrs),
+            hjust = 2)+
+  theme_minimal()+
+  labs(title = "Most Hours Spent Space Walking",
+       y = "",
+       x = "hours")
+  
+  
+
+
+
+```
+
+
+```{r}
 
 ```
 
