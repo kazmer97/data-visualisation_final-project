@@ -375,3 +375,54 @@ astronauts %>%
 
 ```
 
+US Launches 
+
+1966: Peaked state launches
+1986: Challenger Explosion
+1989: Private commercial Launches starts
+2012: Barely any state launches
+
+```{r}
+ launches %>% 
+  filter(state_code == "US") %>% 
+  mutate(agency_type = ifelse(as.character(agency_type) == "startup", "private", as.character(agency_type))) %>%  # combine startup and private
+  group_by(launch_year,agency_type,category) %>% 
+  count() %>% 
+  unite('type_category',agency_type:category,remove=FALSE) %>% 
+  mutate(type_category = case_when(type_category=="state_F" ~ "State - Failure",
+                                   type_category=="state_O" ~ "State - Success",
+                                   type_category=="private_F" ~ "Private - Failure",
+                                   type_category=="private_O" ~ "Private - Success")) %>% 
+  ggplot(aes(x=launch_year,y=n,fill = type_category))+
+  geom_col(width = 0.8)+
+  geom_segment(aes(x = 1966, y = 85, xend = 1966, yend = 78),color = "royalblue",
+                  arrow = arrow(length = unit(0.15, "cm")))+
+  geom_segment(aes(x = 1986, y = 40, xend = 1986, yend = 20),color = "indianred",
+                  arrow = arrow(length = unit(0.15, "cm")))+
+  geom_segment(aes(x = 1988.5, y = 60, xend = 1988.5, yend = 20),color = "grey40",
+                  arrow = arrow(length = unit(0.15, "cm")))+
+  geom_segment(aes(x = 2012, y = 42, xend = 2012, yend = 20),color = "royalblue",
+                  arrow = arrow(length = unit(0.15, "cm")))+
+  annotate("text", x=1966, y=88, label= "1966: Highest State Launches",size=2.5, color="royalblue3") +
+  annotate("text", x=1985, y=48, label= "1986:\n Challenger \n Explosion",size=2.5, color="indianred3") +
+  annotate("text", x=1988.5, y=63, label= "1989: Private Launches Begins",size=2.5, color="grey30") +
+  annotate("text", x=2012, y=45, label= "2012: State Launches Faded",size=2.5, color="royalblue3") +
+  annotate("text", x=1960, y=71, label= "High failure rates \n in early years",size=2.3,color="lightblue4") +
+  labs(title = "US State Launches Falls and Private Launches Rises",
+       subtitle = "US State and Private Launches by Success",
+       x="Year",
+       y="Launches",
+       fill="Agency Success")+
+  theme_clean()+
+  scale_fill_manual("Agency Success", 
+                    values = c("State - Failure" = "lightblue", 
+                               "State - Success" = "dodgerblue",
+                               "Private - Failure" = "grey", 
+                               "Private - Success" = "black"))+
+  theme(legend.title = element_text( size=8), legend.text=element_text(size=8), legend.background = element_rect(color = NA))
+
+```
+state and private launches success/failure rate (spaceX)
+NASA fails, budget cut, 
+blow stuff up cheaper
+
