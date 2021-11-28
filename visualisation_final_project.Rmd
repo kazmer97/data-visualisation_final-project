@@ -23,10 +23,11 @@ library(gghighlight)
 library(plotly)
 library(patchwork)
 library(countrycode)
+library(gridExtra)
 ```
 
 
-```{r}
+```{r, include = FALSE}
 astronauts <- vroom('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv')
 
 launches <- vroom("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv")
@@ -36,12 +37,12 @@ agencies <- vroom("https://raw.githubusercontent.com/rfordatascience/tidytuesday
 mission_success <- vroom(here::here("data","Space_Corrected.csv"))
 ```
 
-```{r}
+```{r, include = FALSE}
 skim(astronauts)
 ```
 
 
-```{r}
+```{r, include = FALSE}
 skim(launches)
 ```
 
@@ -50,7 +51,7 @@ skim(launches)
 skim(agencies)
 ```
 
-```{r}
+```{r, include = FALSE}
 mission_success <- select(mission_success, -c(1,2))
 
 state_names <- c("Iran","Isreal","Japan","India","North Korea","South Korea","Soviet Union","United Kingdom", "cayman Islands")
@@ -58,7 +59,7 @@ state_names <- c("Iran","Isreal","Japan","India","North Korea","South Korea","So
 ```
 
 
-```{r space_race, fig.align='center', fig.height= 5, fig.width= 11}
+```{r space_race, fig.align='center', fig.height= 5, fig.width= 11, include = FALSE}
 
 country_names <- c(US = "United States",
                 'F'  = "France",
@@ -124,8 +125,197 @@ launchs_per_year_US_SU | launchs_per_year_non_us_su
 
 ```
 
-```{r space_race success}
+```{r space_race success, include = FALSE}
+glimpse(astronauts)
+```
 
+## Most Visited Space Stations in Orbit
+
+```{r, message=FALSE, warning=FALSE}
+
+astronauts$in_orbit <- toupper(astronauts$in_orbit)
+
+astronauts %>% 
+  group_by(in_orbit) %>% 
+  summarise(time_spent = round(sum(total_hrs_sum))) %>% 
+  arrange(desc(time_spent)) %>% 
+  head(5) %>% 
+  ggplot(aes(x = factor(in_orbit, level = c("ISS", "MIR", "SALYUT 7", "SALYUT 6", "MIR EP")), y = time_spent)) + 
+  geom_col(color = "navyblue", fill = "navyblue", alpha = 0.6) +
+  annotate("text", x = "SALYUT 6", y = 1000000, label = "Operated by the Soviet Union", size = 3) +
+  geom_segment(
+  aes(x = "SALYUT 6"), 
+      y = 900000, 
+      xend = "SALYUT 7", 
+      yend = 650000,
+  size = 0.1,
+  arrow = arrow(length = unit(0.03, "npc")), color = "black") +
+  geom_segment(
+  aes(x = "SALYUT 6"), 
+      y = 900000, 
+      xend = "SALYUT 7", 
+      yend = 250000,
+  size = 0.1,
+  arrow = arrow(length = unit(0.03, "npc")), color = "black") +
+  geom_segment(
+  aes(x = "SALYUT 6"), 
+      y = 900000, 
+      xend = "SALYUT 6", 
+      yend = 250000,
+  size = 0.1,
+  arrow = arrow(length = unit(0.03, "npc")), color = "black") +
+  geom_segment(
+  aes(x = "SALYUT 6"), 
+      y = 900000, 
+      xend = "MIR EP", 
+      yend = 200000,
+  size = 0.1,
+  arrow = arrow(length = unit(0.03, "npc")), color = "black") +
+  labs(title = "The International Space Station is by Far \nthe most visited station in space.",
+       subtitle = "Histogram of the 10 Most Visited Space Stations throughout time.",
+       x = "Space Orbit Station",
+       y = "Number of Hours Occupied") + 
+  theme(plot.title = element_text(face = "bold"),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(color = "gray94", size = 0.5))
+
+```
+
+## Faceting by Decade tells a different story
+
+The 1960s were led by the US.
+The 70s to the 90s were dominated by the Soviet Union especially with the launch of MIR.
+When MIR failed, this left space for the International Space Station which now dominates. 
+
+
+```{r, fig.width= 6, fig.height=3.5, message=FALSE, warning=FALSE}
+astronauts1 <- astronauts %>% 
+  mutate(decade = floor(year_of_mission/10)*10) %>% 
+  group_by(decade, in_orbit) %>% 
+  summarise(time_spent = round(sum(total_hrs_sum))) %>% 
+  arrange(desc(time_spent)) %>% 
+  slice_max(`time_spent`, n =5) %>% 
+  filter(decade %in% "1960") %>% 
+  ggplot(aes(x = factor(in_orbit, level = c("APOLLO 12", "APOLLO 10", "SOYUZ 7", "GEMINI 11", "GEMINI 5")), y = time_spent)) + 
+  geom_col(color = "navyblue", fill = "navyblue", alpha = 0.6) + 
+  labs(title = "1960s") +
+  theme(plot.title = element_text(face = "bold"),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(color = "gray94", size = 0.5),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank()) 
+
+astronauts2 <- astronauts %>% 
+  mutate(decade = floor(year_of_mission/10)*10) %>% 
+  group_by(decade, in_orbit) %>% 
+  summarise(time_spent = round(sum(total_hrs_sum))) %>% 
+  arrange(desc(time_spent)) %>% 
+  slice_max(`time_spent`, n =5) %>% 
+  filter(decade %in% "1970") %>% 
+  ggplot(aes(x = factor(in_orbit, level = c("SALYUT 6", "SOYUZ 25", "SOYUZ 13", "SKYLAB 4", "SALYUT 5")), y = time_spent)) + 
+  geom_col(color = "navyblue", fill = "navyblue", alpha = 0.6)+ 
+  labs(title = "1970s") +
+  theme(plot.title = element_text(face = "bold"),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(color = "gray94", size = 0.5),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank()) 
+
+astronauts3 <- astronauts %>% 
+  mutate(decade = floor(year_of_mission/10)*10) %>% 
+  group_by(decade, in_orbit) %>% 
+  summarise(time_spent = round(sum(total_hrs_sum))) %>% 
+  arrange(desc(time_spent)) %>%
+  slice_max(`time_spent`, n =5) %>% 
+  filter(decade %in% "1980") %>% 
+  ggplot(aes(x = factor(in_orbit, level = c("SALYUT 7", "MIR", "SALYUT 6", "MIR EP", "SOYUZ T­8")), y = time_spent)) + 
+  geom_col(color = "navyblue", fill = "navyblue", alpha = 0.6)+ 
+  labs(title = "1980s") +
+  theme(plot.title = element_text(face = "bold"),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(color = "gray94", size = 0.5),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank()) 
+
+astronauts4 <- astronauts %>% 
+  mutate(decade = floor(year_of_mission/10)*10) %>% 
+  group_by(decade, in_orbit) %>% 
+  summarise(time_spent = round(sum(total_hrs_sum))) %>% 
+  arrange(desc(time_spent)) %>% 
+  slice_max(`time_spent`, n =5) %>% 
+  filter(decade %in% "1990") %>% 
+  ggplot(aes(x = factor(in_orbit, level = c("MIR", "STS-103", "STS-58", "STS­60", "STS­88")), y = time_spent)) + 
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) +
+  geom_col(color = "navyblue", fill = "navyblue", alpha = 0.6) + 
+  labs(title = "1990s") +
+  theme(plot.title = element_text(face = "bold"),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(color = "gray94", size = 0.5),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank()) 
+
+astronauts5 <- astronauts %>% 
+  mutate(decade = floor(year_of_mission/10)*10) %>% 
+  group_by(decade, in_orbit) %>% 
+  summarise(time_spent = round(sum(total_hrs_sum))) %>% 
+  arrange(desc(time_spent)) %>% 
+  slice_max(`time_spent`, n =5) %>% 
+  filter(decade %in% "2000") %>% 
+  ggplot(aes(x = factor(in_orbit, level = c("ISS", "STS-92", "STS-118", "STS-126", "STS-101")), y = time_spent)) + 
+  geom_col(color = "navyblue", fill = "navyblue", alpha = 0.6) + 
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) +
+  labs(title = "2000s") +
+  theme(plot.title = element_text(face = "bold"),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(color = "gray94", size = 0.5),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank()) 
+
+astronauts6 <- astronauts %>% 
+  mutate(decade = floor(year_of_mission/10)*10) %>% 
+  group_by(decade, in_orbit) %>% 
+  summarise(time_spent = round(sum(total_hrs_sum))) %>% 
+  arrange(desc(time_spent)) %>% 
+  slice_max(`time_spent`, n =5) %>% 
+  filter(decade %in% "2010") %>% 
+  ggplot(aes(x = factor(in_orbit, level = c("ISS", "STS-134", "ABORTED", "STS-131", "STS-133")), y = time_spent)) + 
+  geom_col(color = "navyblue", fill = "navyblue", alpha = 0.6)+
+  labs(title = "2010s") +
+  theme(plot.title = element_text(face = "bold"),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(color = "gray94", size = 0.5),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank()) 
+
+grid.arrange(astronauts1, astronauts2, astronauts3, astronauts4, astronauts5, astronauts6, ncol=3, nrow=2, 
+             top = "Time Spent at the Five Most Visited Spations in Orbit by Decade",
+             bottom = " Space Orbit Station",
+             left = "Number of Hours Occupied")
+```
+
+## EVA
+
+Keeping only values with eva_hrs different than zero. 
+
+```{r, message=FALSE, warning=FALSE}
+
+astronauts %>% 
+  group_by(year_of_mission) %>% 
+  filter(eva_hrs_mission == max(eva_hrs_mission)) %>% 
+  summarise(name, year_of_mission, eva_hrs_mission = max(eva_hrs_mission)) %>% 
+  filter(eva_hrs_mission != 0) %>% 
+  ggplot(aes(x = year_of_mission, y = eva_hrs_mission)) +
+  geom_line(linetype="solid", color = "navyblue", size = 0.2) +
+  geom_point(color = "midnightblue") +
+  labs(title = "Record Holder is Solovyev, Anatoly",
+       subtitle = "Time Series of the Duration of EVA Missions by Year and Astronaut since 1965",
+       x = "Year",
+       y = "Total Duration of EVA Missions (in hours)") +
+  annotate("text", x= 1990, y=85, label= "World Record \nSolovyev, Anatoly", size = 3) +
+  annotate("text", x= 2017, y=50, label= "Second Best \nMorgan, Andrew", size = 3) +
+  theme(plot.title = element_text(face = "bold"),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(color = "gray94", size = 0.6))
 
 ```
 
