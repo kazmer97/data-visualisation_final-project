@@ -5,10 +5,13 @@ output:
   flexdashboard::flex_dashboard:
     # storyboard: true
     orientation: columns
+    source_code: embed
+    social: menu
+    theme:
+      version: 4
+      bootswatch: bootstrap
     
-    # theme:
-    #   version: 4
-    #   bootswatch: bootstrap
+    
 ---
 
 
@@ -55,7 +58,7 @@ library(jpeg)
 library(png)
 library(grid)
 library(svglite)
-
+library(viridis)
 
 ```
 
@@ -103,7 +106,7 @@ country_names <- c(US = "United States",
                 'I-ELDO' = "European Launcher Development Organisation")  
 
 
-country_colors <- c(US = "blue",
+country_colors <- c(US = "lightblue",
                     'F'  = "skyblue",
                     BR = "limegreen",
                     CN = "red3",
@@ -114,12 +117,12 @@ country_colors <- c(US = "blue",
                     IL = "tan2",
                     J = "mistyrose",
                     IN = "",
-                    KR = "North Korea",
+                    KR = "red",
                     KP = "South Korea",
-                    SU = "Soviet Union",
-                    UK = "United Kingdom",
-                    CYM = "Cayman Islands",
-                    'I-ELDO' = "European Launcher Development Organisation")
+                    SU = "tomato",
+                    UK = "blue",
+                    CYM = "orange",
+                    'I-ELDO' = "sienna")
 
 
 
@@ -145,7 +148,7 @@ launches <- launches %>%
 <br>
 <br>
 <br>
-**To infinity and Beyond** - Stories from Space and about Astronauts
+**To Infinity and Beyond** - Stories from Space and about Astronauts
 <br>
 <br>
 </font>
@@ -156,6 +159,7 @@ launches <- launches %>%
 *Authors: * *Kazmer Nagy-Betegh, Nisa Ozer, Lauren Wade, Chandrima Tolia, Nereid Kwok, Thomas Giannetti*
 </font>
 </center>
+
 
 
 
@@ -191,9 +195,8 @@ launchs_per_year_US_SU <- space_race %>%
   theme_minimal()+
   labs(title = "United States and Soviet Union (Russia) Space Race",
        x = "",
-       y = "launches/year")
-  # scale_color_manual(values = country_colors)
-
+       y = "launches/year")+
+  scale_color_manual(values = c("tomato","tomato", "lightblue"))
 
 
 launchs_per_year_non_us_su <- space_race %>% 
@@ -206,8 +209,10 @@ launchs_per_year_non_us_su <- space_race %>%
   labs(title = "Countries joining Space Exploration",
        x = "",
        y = "launches/year")
-  # scale_color_manual(values = country_colors)
 
+
+
+  
 temp <- launchs_per_year_US_SU  | launchs_per_year_non_us_su
 
 ggsave("figures/launches_per_country.svg", temp, height = 10, width = 12)
@@ -234,13 +239,13 @@ space_race_dates <- space_race %>%
               y = num_launches))+
   geom_point(aes(color = country_name))+
   geom_line(aes(color = country_name))+
-  gghighlight(state_code %in% c("US","SU","RU"))+
+  scale_color_manual(values = c("tomato","tomato", "lightblue"))+
   theme_minimal()+
   labs(title = "1957 - 1969 Space Race",
        x = "",
        y = "launches/year")+
   annotate("rect", xmin = 1957, xmax = 1969, ymin = 0, ymax = 110,
-           alpha = 0.3, fill = "skyblue")+
+           alpha = 0.3, fill = "lemonchiffon3")+
   theme(plot.title = element_text(size = title.size),
         axis.title = element_text(size = axis.title.size),
         axis.text = element_text(size = axis.text.size))
@@ -291,7 +296,7 @@ space_race_key_dates <- launches %>%
               label = mission_ssuccess_rate))+
   
   annotate("rect", xmin = 1957, xmax = 1969, ymin = 0, ymax = 180,
-           alpha = 0.3, fill = "skyblue")+
+           alpha = 0.3, fill = "lemonchiffon3")+
   
   annotation_custom(g, xmin=1955, xmax=1959, ymin=57, ymax=80)+
   annotate("segment", x = 1957, y = 0, xend = 1957, yend = 50 ,color = "tomato")+
@@ -323,6 +328,7 @@ space_race_key_dates <- launches %>%
   #             y = num_launches,
   #             label = paste0(mission_ssuccess_rate,"%")),
   #           vjust = -1)+
+  scale_color_manual(values = c("tomato", "lightblue"))+
   theme_minimal()+
   labs(title = "1957 - 1969 Space Race",
        x = "",
@@ -335,6 +341,8 @@ space_race_key_dates <- launches %>%
         axis.title = element_text(size = axis.title.size),
         axis.text = element_text(size = axis.text.size),
         plot.subtitle = element_text(size = subtitle.size))
+
+# space_race_key_dates
   
 ggsave(file="figures/space_race_key_dates.svg", plot=space_race_key_dates, width=12, height=7)
 
@@ -373,12 +381,13 @@ space_race_mission_success <- launches %>%
        fill = "")+
   facet_grid(~launch_year)+
   scale_fill_manual(label = c("Failed Mission", "Succesful Mission"),
-                    values = c("tomato","springgreen4"))+
+                    values = c("lightblue","dodgerblue"))+
   theme(axis.text.x = element_text(angle= 45, ))+
   theme(plot.title = element_text(size = title.size),
         axis.title = element_text(size = axis.title.size),
         axis.text = element_text(size = axis.text.size),
         plot.subtitle = element_text(size = subtitle.size))
+
 
 # space_race_mission_success
 
@@ -419,6 +428,7 @@ age_first_plot <- age_first %>%
        y="Number of Austronauts") +
   facet_wrap(~decade)+
   theme_minimal()+
+  scale_fill_viridis(discrete = TRUE)+
   theme(plot.title = element_text(size = title.size),
         axis.title = element_text(size = axis.title.size),
         axis.text = element_text(size = axis.text.size),
@@ -434,6 +444,7 @@ age_plot <- age %>%
         x="Age at Mission",
        y="Number of Austronauts") +
   theme_minimal() +
+  scale_fill_viridis(discrete = TRUE)+
   facet_wrap(~decade)+
   theme(plot.title = element_text(size = title.size),
         axis.title = element_text(size = axis.title.size),
@@ -441,6 +452,8 @@ age_plot <- age %>%
         plot.subtitle = element_text(size = subtitle.size))
  
 temp <- age_first_plot / age_plot
+
+# temp
 
 ggsave("figures/astronout_ages.svg", temp, width = 12, height = 10)
 
@@ -491,7 +504,10 @@ female_male_annotated <- female_male_annotated +
   theme(plot.title = element_text(size = title.size),
         axis.title = element_text(size = axis.title.size),
         axis.text = element_text(size = axis.text.size),
-        plot.subtitle = element_text(size = subtitle.size))
+        plot.subtitle = element_text(size = subtitle.size))+
+  scale_fill_manual(values = c("wheat", "slategray2"))
+
+# female_male_annotated
     
 ggsave("figures/female_male_annotated.svg", female_male_annotated, width = 12, height = 10)
 ```
@@ -654,3 +670,55 @@ ggsave("figures/nasa_budget.svg",nasa_budget, width = 12, height = 10)
 ```
 
 ![](./figures/nasa_budget.svg)
+
+
+
+```{r linear-model}
+
+# Data exploration for potential model development
+
+astronauts %>% 
+  count(occupation)
+
+astronauts <- astronauts %>% 
+  mutate(occupation = replace(occupation, occupation == "Flight engineer", "flight engineer"),
+         occupation = replace(occupation, occupation == "Pilot", "pilot"),
+         occupation = replace(occupation, occupation == "Space tourist", "Other (space tourist)"),
+         occupation = replace(occupation, occupation == "Other (Space tourist)", "Other (space tourist)"),
+         occupation = replace(occupation, occupation == "spaceflight participant", "Other (space tourist)"))
+
+
+astronauts %>% 
+  count(occupation)
+
+astronauts %>% 
+  count(sex)
+
+astronauts %>% 
+  count(military_civilian)
+
+
+astronauts %>% 
+  count(ascend_shuttle) %>% 
+  arrange(desc(n))
+
+
+astronauts %>% 
+  count(in_orbit) %>% 
+  arrange(desc(n))
+
+astronauts %>% 
+  count(descend_shuttle) %>% 
+  arrange(desc(n))
+
+
+model <- lm(hours_mission ~ occupation*military_civilian*sex ,
+            data = astronauts
+            )
+
+
+summary(model)
+
+```
+
+
