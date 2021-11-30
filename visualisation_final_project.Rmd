@@ -5,11 +5,10 @@ output:
   flexdashboard::flex_dashboard:
     # storyboard: true
     orientation: columns
-    vertical_layout: fill
     
-    theme:
-      version: 4
-      bootswatch: bootstrap
+    # theme:
+    #   version: 4
+    #   bootswatch: bootstrap
 ---
 
 
@@ -18,8 +17,10 @@ knitr::opts_chunk$set(
   echo = FALSE,
   message = FALSE,
   warning = FALSE,
-  results = FALSE
+  results = FALSE,
+  knitr::opts_knit$set(root.dir = getwd())
 )
+
 ```
 
 
@@ -53,6 +54,7 @@ library(countrycode)
 library(jpeg)
 library(png)
 library(grid)
+library(svglite)
 
 
 ```
@@ -157,11 +159,11 @@ launches <- launches %>%
 
 
 
-# Countries Launching Rockets
+# Countries Launching Rockets {data-navmenu="Space Race"}
 
 ## Column 1
 
-Let us look at the number of launches by Country. You can see a seperation between the US and Soviet Union, launching significantly more during the cold war. These two countries kickstarted space exploration during the sixties so let us look at that weird and exciting time.
+>Let us look at the number of launches by Country. You can see a seperation between the US and Soviet Union, launching significantly more during the cold war. These two countries kickstarted space exploration during the sixties so let us look at that weird and exciting time.
 
 ### Launches by Countries
 
@@ -206,18 +208,21 @@ launchs_per_year_non_us_su <- space_race %>%
        y = "launches/year")
   # scale_color_manual(values = country_colors)
 
-launchs_per_year_US_SU  | launchs_per_year_non_us_su
+temp <- launchs_per_year_US_SU  | launchs_per_year_non_us_su
+
+ggsave("figures/launches_per_country.svg", temp, height = 10, width = 12)
 
 ```
 
+![](./figures/launches_per_country.svg)
 
-# Space Race Dates
+# Space Race Dates {data-navmenu="Space Race"}
 
 ## Column 1
 
 ### Space race dates marked {data-height=300}
 
-```{r space_race, fig.width=16}
+```{r space_race, fig.width=12, fig.height=3}
 
 img <- readJPEG(here::here("data/milky.jpg"))
 
@@ -236,17 +241,21 @@ space_race_dates <- space_race %>%
        y = "launches/year")+
   annotate("rect", xmin = 1957, xmax = 1969, ymin = 0, ymax = 110,
            alpha = 0.3, fill = "skyblue")+
-  theme(plot.title = element_text(size = title.size*7/3),
+  theme(plot.title = element_text(size = title.size),
         axis.title = element_text(size = axis.title.size),
         axis.text = element_text(size = axis.text.size))
 
 
-space_race_dates
+# space_race_dates
+
+ggsave(file="figures/space_race_dates.svg", plot=space_race_dates, width=12, height=3)
 ```
+
+![](./figures/space_race_dates.svg)
 
 ### Space Race Key Dates {data-height=700}
 
-```{r fig.width=12}
+```{r fig.width=12, fig.height=7}
 
 space_race_mission_success_values <- launches %>% 
   group_by(launch_year, country_name, category) %>% 
@@ -272,7 +281,7 @@ img <- readJPEG(here::here("data/moon.jpg"))
 
 g3 <- rasterGrob(img, interpolate=TRUE)
 
-launches %>% 
+space_race_key_dates <- launches %>% 
   filter(state_code %in% c("US", "SU", "RU")) %>% 
   filter(launch_year < 1970) %>% 
   group_by(launch_year, country_name) %>% 
@@ -310,13 +319,12 @@ launches %>%
   
   geom_point(aes(color = country_name))+
   geom_line(aes(color = country_name))+
-  geom_text(aes(x = launch_year,
-              y = num_launches,
-              label = paste0(mission_ssuccess_rate,"%")),
-            vjust = -1)+
+  # geom_text(aes(x = launch_year,
+  #             y = num_launches,
+  #             label = paste0(mission_ssuccess_rate,"%")),
+  #           vjust = -1)+
   theme_minimal()+
   labs(title = "1957 - 1969 Space Race",
-       subtitle = "Percentages indicate the success rate of launches in each year",
        x = "",
        y = "launches/year",
        color = "")+
@@ -325,14 +333,20 @@ launches %>%
   scale_x_continuous(breaks = scales::pretty_breaks(12))+
   theme(plot.title = element_text(size = title.size),
         axis.title = element_text(size = axis.title.size),
-        axis.text = element_text(size = axis.text.size))
+        axis.text = element_text(size = axis.text.size),
+        plot.subtitle = element_text(size = subtitle.size))
   
+ggsave(file="figures/space_race_key_dates.svg", plot=space_race_key_dates, width=12, height=7)
 
 ```
 
+![](./figures/space_race_key_dates.svg)
 
+# Mission SuccessRate during Space Race {data-navmenu="Space Race"}
 
-# Slide 3
+## Column 1
+
+### Mission Success during the Space Race 
 
 ```{r}
 
@@ -350,7 +364,8 @@ space_race_mission_success <- launches %>%
                 y = n_missions,
                 label = paste0(prc_missions,"%"),
                 group = category),
-            position=position_stack(vjust=0.5))+
+            position=position_stack(vjust=0.5),
+            size = rel(2))+
   theme_minimal()+
   labs(title = "1957 - 1969 Space Race success Rate",
        x = "",
@@ -359,12 +374,25 @@ space_race_mission_success <- launches %>%
   facet_grid(~launch_year)+
   scale_fill_manual(label = c("Failed Mission", "Succesful Mission"),
                     values = c("tomato","springgreen4"))+
-  theme(axis.text.x = element_text(angle= 45, ))
+  theme(axis.text.x = element_text(angle= 45, ))+
+  theme(plot.title = element_text(size = title.size),
+        axis.title = element_text(size = axis.title.size),
+        axis.text = element_text(size = axis.text.size),
+        plot.subtitle = element_text(size = subtitle.size))
 
-space_race_mission_success
+# space_race_mission_success
+
+ggsave("figures/space_race_mission_success.svg", space_race_mission_success, width = 12, height = 10)
 ```
+![](./figures/space_race_mission_success.svg)
 
-# Slide 4
+# Astronouts Age {data-navmenu="Astronauts"}
+
+>Lets take a look at trends between astronauts. Have they gotten younger or older over the years? Did agencies start sending up younger or older astronauts as technology has improved?
+
+## Column 1   
+
+### Astronaut First Mission Age and Average Age across missions
 
 ```{r}
 age <- astronauts %>% 
@@ -390,7 +418,11 @@ age_first_plot <- age_first %>%
        x="Age at Mission",
        y="Number of Austronauts") +
   facet_wrap(~decade)+
-  theme_minimal()
+  theme_minimal()+
+  theme(plot.title = element_text(size = title.size),
+        axis.title = element_text(size = axis.title.size),
+        axis.text = element_text(size = axis.text.size),
+        plot.subtitle = element_text(size = subtitle.size))
 
 
 #general age distribution in the industry
@@ -402,12 +434,35 @@ age_plot <- age %>%
         x="Age at Mission",
        y="Number of Austronauts") +
   theme_minimal() +
-  facet_wrap(~decade)
+  facet_wrap(~decade)+
+  theme(plot.title = element_text(size = title.size),
+        axis.title = element_text(size = axis.title.size),
+        axis.text = element_text(size = axis.text.size),
+        plot.subtitle = element_text(size = subtitle.size))
  
-age_first_plot / age_plot
-```
+temp <- age_first_plot / age_plot
 
-# Slide 5
+ggsave("figures/astronout_ages.svg", temp, width = 12, height = 10)
+
+```
+![](./figures/astronout_ages.svg)
+
+## Column 2 {data-width=200}
+
+
+### Observations 
+
+ - It looks like the amount of astronauts is increasing until the 2000s and then decreases substantially in 2010. This is most likely due to the decrease in budgets for space travel, which we will go into more detail about later. 
+ 
+ - Other explanation is that being an astronout was at peek coolnes during late 70s 80s as those kids became the astronouts of the 90s.
+
+
+# Gender Distribution of Astronouts {data-navmenu="Astronauts"}
+
+
+## Column 1
+
+### Gender Distribution Across the Years
 
 ```{r }
 
@@ -428,20 +483,41 @@ female_male_annotated <- female_male +
   annotate("text", x = 1965, y = 25, label = "Valentina Tereshkova", size = 3) + 
   annotate("segment", x = 1965, xend = 1963, y = 23,  yend = 6, colour = "black", size = 0.5 , arrow = arrow() )
 
-female_male_annotated + scale_x_continuous(breaks=seq(1960,2020,5)) + 
-  geom_text(aes(label = n), vjust = -0.2, size =4)
+female_male_annotated <- female_male_annotated + 
+  scale_x_continuous(breaks=seq(1960,2020,5)) + 
+  geom_text(aes(label = n), 
+            position=position_stack(vjust=0.5), 
+            size =rel(2))+
+  theme(plot.title = element_text(size = title.size),
+        axis.title = element_text(size = axis.title.size),
+        axis.text = element_text(size = axis.text.size),
+        plot.subtitle = element_text(size = subtitle.size))
     
+ggsave("figures/female_male_annotated.svg", female_male_annotated, width = 12, height = 10)
 ```
-
-# Slide 5
-
+![](./figures/female_male_annotated.svg)
 
 
-# Slide
+## Column 2 {data-width=200}
+
+### Observations
+
+ - The first woman to go into space was a Russian woman named Valentina Tereshkova in 1963. Looking at the graph we can see another woman did not travel into space until 1982 almost 20 years later. In the 80s the number of women astronauts increased consistently but then decreased along with the number of astronauts as a whole.
+ 
+ - Where Russians ahead of the curve of gender equality or just needed a point during the space race?
+
+
+# Space Walks {data-navmenu="Astronauts"}
+
+>Interestingly some of these records have not been broken within the past 2 decades. 
+
+## Column 1
+
+### State vs Private Launches
 
 ```{r space walk record holders, fig.align='center', fig.height= 5, fig.width= 11, echo=FALSE}
 
-astronauts %>% 
+space_walk <- astronauts %>% 
   group_by(name) %>% 
   distinct(nationality, total_eva_hrs) %>% 
   ungroup() %>% 
@@ -457,22 +533,37 @@ astronauts %>%
   theme_minimal()+
   labs(title = "Most Hours Spent Space Walking",
        y = "",
-       x = "hours")
-  
-  
+       x = "hours")+
+  scale_fill_manual(values = c( "lightblue", "tomato"))
 
-
+ggsave("figures/space_walk.svg", space_walk, width = 12, height = 10)
 
 ```
 
-# Slide
+![](./figures/space_walk.svg)
 
-US Launches
+## Column 2 {data-width=200}
 
-1966: Peaked state launches 1986: Challenger Explosion 1989: Private commercial Launches starts 2012: Barely any state launches
+### Observation
+
+ - Connecting back the number of launches and the space race it is blatant that the US astronauts spent more time space walking (being outside a space vehicle) than the USSR, but the astronaut with the most hours walking in space was Russian.
+
+  - Space walks are usually done with the objective of fixing satellites and space-telescopes. 
+
+
+# Privatisation of Space 
+
+>US Launches
+>1966: Peaked state launches 1986: Challenger Explosion 1989: Private commercial Launches starts 2012: Barely any state launches
+>We can also see a decrease across the board overtime in failed launches and that private launches tend to have a little but of a lower success rate, but quicker iteration time which brings costs down.
+>Our hypothesis was that this was due to the budget that goes into private vs state launches and so we will explore the Nasa budget more on the next slide. 
+
+## Column 1
+
+### Privatisation of Space, State vs Private Launches
 
 ```{r }
- launches %>% 
+ state_vs_private <- launches %>% 
   filter(state_code == "US") %>% 
   mutate(agency_type = ifelse(as.character(agency_type) == "startup", "private", as.character(agency_type))) %>%  # combine startup and private
   group_by(launch_year,agency_type,category) %>% 
@@ -508,13 +599,24 @@ US Launches
                                "State - Success" = "dodgerblue",
                                "Private - Failure" = "grey", 
                                "Private - Success" = "black"))+
-  theme(legend.title = element_text( size=8), legend.text=element_text(size=8), legend.background = element_rect(color = NA))
+  theme(plot.title = element_text(size = title.size),
+        axis.title = element_text(size = axis.title.size),
+        axis.text = element_text(size = axis.text.size),
+        plot.subtitle = element_text(size = subtitle.size),
+        legend.background = element_rect(color = NA))
+
+ggsave("figures/state_vs_private.svg", state_vs_private, width = 12, height = 10)
 
 ```
 
-General: High spending/budget during Space Race. Drastic decrease of spending/budget once space is over. US-USSR Space Race: Budget higher than actual spending (underbudget), NASA is too ambitious 2012 paused launches: Budget are increasing, ...
+![](./figures/state_vs_private.svg)
 
-# Slide
+# NASA Budget
+>General: High spending/budget during Space Race. Drastic decrease of spending/budget once space is over. US-USSR Space Race: Budget higher than actual spending (underbudget), NASA is too ambitious 2012 paused launches: Budget are increasing, ...
+
+## Column 1
+
+### NASA Budget
 
 ```{r}
 # Import and clean Nasa Spending Data
@@ -526,7 +628,7 @@ nasa_spending <- nasa_spending %>%
          actual = as.numeric(actual))
 
 # Graph of NASA actual vs budget spending
-nasa_spending %>% 
+nasa_budget <- nasa_spending %>% 
   ggplot(aes(x=fiscal_year))+
   geom_line(data=subset(nasa_spending, fiscal_year>=2021),aes(y=request),linetype=2,color="royalblue",size=1) +
   geom_line(data=subset(nasa_spending, fiscal_year<=2021),aes(y=request),linetype=1,color="orchid") +
@@ -547,6 +649,8 @@ nasa_spending %>%
        y="USD (Million)")+
   theme_minimal()
 
+
+ggsave("figures/nasa_budget.svg",nasa_budget, width = 12, height = 10)
 ```
 
-state and private launches success/failure rate (spaceX) NASA fails, budget cut, blow stuff up cheaper
+![](./figures/nasa_budget.svg)
