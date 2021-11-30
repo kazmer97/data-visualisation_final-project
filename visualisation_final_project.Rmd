@@ -161,8 +161,6 @@ launches <- launches %>%
 </center>
 
 
-
-
 # Countries Launching Rockets {data-navmenu="Space Race"}
 
 ## Column 1
