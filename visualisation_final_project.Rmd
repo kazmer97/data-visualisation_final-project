@@ -527,7 +527,7 @@ ggsave("figures/female_male_annotated.svg", female_male_annotated, width = 12, h
 
 ## Column 1
 
-### State vs Private Launches
+### Most Hours Spent Space Walking
 
 ```{r space walk record holders, fig.align='center', fig.height= 5, fig.width= 11, echo=FALSE}
 
@@ -567,10 +567,8 @@ ggsave("figures/space_walk.svg", space_walk, width = 12, height = 10)
 
 # Privatisation of Space 
 
->US Launches
->1966: Peaked state launches 1986: Challenger Explosion 1989: Private commercial Launches starts 2012: Barely any state launches
->We can also see a decrease across the board overtime in failed launches and that private launches tend to have a little but of a lower success rate, but quicker iteration time which brings costs down.
->Our hypothesis was that this was due to the budget that goes into private vs state launches and so we will explore the Nasa budget more on the next slide. 
+>US State Launches Falls while Private Launches Rise
+
 
 ## Column 1
 
@@ -625,8 +623,22 @@ ggsave("figures/state_vs_private.svg", state_vs_private, width = 12, height = 10
 
 ![](./figures/state_vs_private.svg)
 
+## Column 2 {data-width=200}
+
+### Observation
+
+ - 1966: Peaked state launches 1986: Challenger Explosion
+
+ - 1989: Private commercial Launches starts
+  
+ - 2012: Barely any state launches
+  
+ - We can also see a decrease across the board overtime in failed launches and that private launches tend to have a little but of a lower success rate, but quicker iteration time which brings costs down.
+
+ - Our hypothesis was that this was due to the budget that goes into private vs state launches and so we will explore the Nasa budget more on the next slide. 
+
 # NASA Budget
->General: High spending/budget during Space Race. Drastic decrease of spending/budget once space is over. US-USSR Space Race: Budget higher than actual spending (underbudget), NASA is too ambitious 2012 paused launches: Budget are increasing, ...
+> Under budget during Space Race. Over budget after lauching missions pauses as NASA focus on other projects.
 
 ## Column 1
 
@@ -669,6 +681,14 @@ ggsave("figures/nasa_budget.svg",nasa_budget, width = 12, height = 10)
 
 ![](./figures/nasa_budget.svg)
 
+## Column 2 {data-width=200}
+
+### Observation
+
+ - When NASA paused self-launching missions in 2012, NASA started to spend over the budget. We can see that NASA moved from launching missions to other projects such as focusing on Mars exploration (40% of total spending from 2021).
+
+ - NASA's forecasted budget continues to increase, and the expected spending is expected to be higher than the Space Race period. The future projects in the coming 5 years will be focused on Mars Sample Return (less of exploration) and other planetary discovery and explorations.
+  
 
 
 ```{r linear-model}
