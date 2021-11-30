@@ -6,6 +6,10 @@ output:
     # storyboard: true
     orientation: columns
     vertical_layout: fill
+    
+    theme:
+      version: 4
+      bootswatch: bootstrap
 ---
 
 
@@ -19,12 +23,24 @@ knitr::opts_chunk$set(
 ```
 
 
+
+```{r figure details}
+
+title.size <- 16
+subtitle.size <- 12
+axis.title.size <- 10
+axis.text.size <- 8
+
+
+```
+
+
 ```{r setup}
 library(flexdashboard)
 ```
 
 ```{r libraries, echo=FALSE}
-
+library(bslib)
 library(skimr)
 library(vroom)
 library(tidyverse)
@@ -219,7 +235,10 @@ space_race_dates <- space_race %>%
        x = "",
        y = "launches/year")+
   annotate("rect", xmin = 1957, xmax = 1969, ymin = 0, ymax = 110,
-           alpha = 0.3, fill = "skyblue")
+           alpha = 0.3, fill = "skyblue")+
+  theme(plot.title = element_text(size = title.size*7/3),
+        axis.title = element_text(size = axis.title.size),
+        axis.text = element_text(size = axis.text.size))
 
 
 space_race_dates
@@ -303,7 +322,10 @@ launches %>%
        color = "")+
   xlim(1955,1972)+
   ylim(0,180)+
-  scale_x_continuous(breaks = scales::pretty_breaks(12))
+  scale_x_continuous(breaks = scales::pretty_breaks(12))+
+  theme(plot.title = element_text(size = title.size),
+        axis.title = element_text(size = axis.title.size),
+        axis.text = element_text(size = axis.text.size))
   
 
 ```
