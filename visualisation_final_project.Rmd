@@ -188,7 +188,7 @@ The 70s to the 90s were dominated by the Soviet Union especially with the launch
 When MIR failed, this left space for the International Space Station which now dominates. 
 
 
-```{r, fig.width= 6, fig.height=3.5, message=FALSE, warning=FALSE}
+```{r, fig.width= 11, fig.height = 6, message=FALSE, warning=FALSE}
 astronauts1 <- astronauts %>% 
   mutate(decade = floor(year_of_mission/10)*10) %>% 
   group_by(decade, in_orbit) %>% 
