@@ -719,4 +719,39 @@ summary(model)
 
 ```
 
+# Data Sources
+
+## Column 1
+
+### Data Source, Methods Used
+
+<font size="+2">
+**Methods Used:**
+</font>
+
+ - The Data was checked for inconsistencies and missing values then cleaned
+ - For each visualisation the necessary calculations were conducted to summarise, transform or filter the data. It is all visible through the Source Code button within the dashboard.
+ - Apart from exploratory analyses modelling was tried on the data, but the dataset doesn't lend itself great for predictions. A linear regression does reveal signifcant correlation between time spent increased time spent on missions and being a flight mechanic
+ - The plotting methods used are mainly column charts, scatter plots combined with line charts and histograms.
+
+
+<br>
+<br>
+<br>
+<font size="+2">
+**Data Sources:**
+</font>
+
+[Data is from tiny tuesday challenge](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-07-14)
+
+[astronauts dataset](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv)
+
+[launches dataset](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv)
+
+[agencies dataset](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/agencies.csv)
+
+[mission success](https://www.kaggle.com/agirlcoding/all-space-missions-from-1957)
+
+[NASA budget dataset](https://www.planetary.org/space-policy/planetary-exploration-budget-dataset)
+
 
