@@ -1,22 +1,29 @@
 ---
 title: "Data Visualisation Final Project"
-author: "Study Group 11: Nereid Kwok, Nisa Ozer, Lauren Wade, Thomas Giannetti-Fakhouri, Kazmer Nagy-Betegh, Chandrime Tolia"
-date: "`r Sys.Date()`"
-output:
-  powerpoint_presentation:
-   reference_doc: reference_doc.pptx
-  
 
+output:
+  flexdashboard::flex_dashboard:
+    # storyboard: true
+    orientation: columns
+    vertical_layout: fill
 ---
 
 
-```{r, include=FALSE}
+```{r}
 knitr::opts_chunk$set(
-  echo = FALSE,fig.align = 'left', message = FALSE, echo = FALSE, results = FALSE, warning = FALSE
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  results = FALSE
 )
 ```
 
-```{r libraries, include=FALSE}
+
+```{r setup}
+library(flexdashboard)
+```
+
+```{r libraries, echo=FALSE}
 
 library(skimr)
 library(vroom)
@@ -31,10 +38,11 @@ library(jpeg)
 library(png)
 library(grid)
 
+
 ```
 
+```{r echo=FALSE}
 
-```{r echo=FALSE, include=FALSE}
 astronauts <- vroom('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv')
 
 launches <- vroom("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv")
@@ -44,19 +52,6 @@ agencies <- vroom("https://raw.githubusercontent.com/rfordatascience/tidytuesday
 mission_success <- vroom(here::here("data","Space_Corrected.csv"))
 ```
 
-```{r echo=FALSE, include=FALSE}
-skim(astronauts)
-```
-
-
-```{r echo=FALSE, include=FALSE}
-skim(launches)
-```
-
-
-```{r echo=FALSE, include=FALSE}
-skim(agencies)
-```
 
 ```{r echo=FALSE, include=FALSE}
 mission_success <- select(mission_success, -c(1,2))
@@ -69,7 +64,6 @@ mission_success <- mission_success %>%
 launches <-  launches %>% 
   left_join(mission_success, by = c("launch_date" = "datum"))
 ```
-
 
 ```{r, echo=FALSE, include=FALSE}
 country_names <- c(US = "United States",
@@ -119,11 +113,44 @@ launches <- launches %>%
                             TRUE ~ agency))
 
 ```
+# Introduction
+
+## Column 1 
+
+### Introduction
 
 
-# Slide 1
+<center>
+<font size="+6">
+<br>
+<br>
+<br>
+<br>
+<br>
+**To infinity and Beyond** - Stories from Space and about Astronauts
+<br>
+<br>
+</font>
+</center>
 
-```{r space_race1, fig.height= 5, fig.width= 11}
+<center>
+<font size="+2">
+*Authors: * *Kazmer Nagy-Betegh, Nisa Ozer, Lauren Wade, Chandrima Tolia, Nereid Kwok, Thomas Giannetti*
+</font>
+</center>
+
+
+
+# Countries Launching Rockets
+
+## Column 1
+
+Let us look at the number of launches by Country. You can see a seperation between the US and Soviet Union, launching significantly more during the cold war. These two countries kickstarted space exploration during the sixties so let us look at that weird and exciting time.
+
+### Launches by Countries
+
+
+```{r space_race1, fig.height= 5, fig.width= 11, fig.align='center'}
 
 launches %>% 
   filter(country_name == "NA")
@@ -167,9 +194,14 @@ launchs_per_year_US_SU  | launchs_per_year_non_us_su
 
 ```
 
-# Slide 2
 
-```{r space_race, fig.height= 5, fig.width= 11}
+# Space Race Dates
+
+## Column 1
+
+### Space race dates marked {data-height=300}
+
+```{r space_race, fig.width=16}
 
 img <- readJPEG(here::here("data/milky.jpg"))
 
@@ -193,104 +225,9 @@ space_race_dates <- space_race %>%
 space_race_dates
 ```
 
-# Slide 3
+### Space Race Key Dates {data-height=700}
 
-```{r space race success ,fig.align='center', fig.height= 5, fig.width= 11, echo=FALSE}
-
-
-space_race_mission_success <- launches %>% 
-  filter(state_code %in% c("US", "SU", "RU")) %>%
-  filter(launch_year < 1970) %>% 
-  group_by(launch_year, country_name, category) %>% 
-  summarise(n_missions = n()) %>% 
-  mutate(prc_missions = round(n_missions/sum(n_missions)*100,2)) %>% 
-  ggplot(aes(x = country_name,
-              y = n_missions))+
-  geom_col(aes(fill = category))+
-  geom_text(aes(x = country_name,
-                y = n_missions,
-                label = paste0(prc_missions,"%"),
-                group = category),
-            position=position_stack(vjust=0.5))+
-  theme_minimal()+
-  labs(title = "1957 - 1969 Space Race success Rate",
-       x = "",
-       y = "launches/year",
-       fill = "")+
-  facet_grid(~launch_year)+
-  scale_fill_manual(label = c("Failed Mission", "Succesful Mission"),
-                    values = c("tomato","springgreen4"))+
-  theme(axis.text.x = element_text(angle= 45, ))
-
-space_race_mission_success
-```
-
-
-# Slide 4
-```{r space_race success, fig.height= 5, fig.width= 11}
-age <- astronauts %>% 
-  mutate(age_at_mission = year_of_mission - year_of_birth) %>% 
-  select(age_at_mission, year_of_mission, year_of_birth, name) %>%
-  mutate(decade = case_when((year_of_mission >= 1960 & year_of_mission < 1970) ~ "1960s",
-                            (year_of_mission >= 1970 & year_of_mission < 1980) ~ "1970s",
-                            (year_of_mission >= 1980 & year_of_mission < 1990) ~ "1980s",
-                            (year_of_mission >= 1990 & year_of_mission < 2000) ~ "1990s",
-                            (year_of_mission >= 2000 & year_of_mission < 2010) ~ "2000s",
-                            (year_of_mission >= 2010 & year_of_mission < 2020) ~ "2010s"))
-
-age_first <- age %>% 
-  group_by(name) %>% 
-  summarise(age_at_mission = min(age_at_mission), decade)
-
-#age at their first mission, when they become astronauts
-age_first_plot <- age_first %>% 
-  ggplot(aes( x = age_at_mission, fill=decade )) +
-  geom_histogram()+
-  labs(title = "Astronauts Have Started Their Career Later Overtime",
-       subtitle = "Age taken for each astronaut at the time of their first mission",
-       x="Age at Mission",
-       y="Number of Austronauts") +
-  facet_wrap(~decade)+
-  theme_minimal()
-
-
-#general age distribution in the industry
-age_plot <- age %>% 
-  ggplot(aes( x = age_at_mission, fill=decade )) +
-  geom_histogram() +
-  labs(title = "Astronauts Have Gotten Older Overtime",
-       subtitle = "Age taken for each astronaut at time of every mission",
-        x="Age at Mission",
-       y="Number of Austronauts") +
-  theme_minimal() +
-  facet_wrap(~decade)
- 
-age_first_plot / age_plot
-```
-# Slide 5
-
-```{r fig.align='center', fig.height= 5, fig.width= 11}
-
-gender_count <- astronauts %>% 
-    group_by(sex, year_of_mission) %>% 
-    count(year_of_mission)
-
-female_male <- gender_count %>% 
-  ggplot(aes(x = year_of_mission, y = n, fill = sex)) +
-  geom_col() +
-  labs(title = "Women Start Going to Space in the 80s",
-       subtitle = "Data taken for each austronaut at time of every mission",
-       x="Year of Mission",
-       y="Number of Austronauts")+
-  theme_minimal()
-
-female_male_annotated <- female_male + 
-  annotate("text", x = 1965, y = 25, label = "Valentina Tereshkova", size = 3) + 
-  annotate("segment", x = 1965, xend = 1963, y = 23,  yend = 6, colour = "black", size = 0.5 , arrow = arrow() )
-
-female_male_annotated + scale_x_continuous(breaks=seq(1960,2020,5)) + 
-  geom_text(aes(label = n), vjust = -0.2, size =4)
-
+```{r fig.width=12}
 
 space_race_mission_success_values <- launches %>% 
   group_by(launch_year, country_name, category) %>% 
@@ -302,12 +239,6 @@ space_race_mission_success_values <- launches %>%
 
 launches <- launches %>% 
   left_join(space_race_mission_success_values, by = c("country_name" = "country_name","launch_year" = "launch_year"))
-    
-```
-# Slide 5
-
-
-```{r space race key dates, fig.align='center', fig.height= 5, fig.width= 11, echo=FALSE}
 
 img <- readJPEG(here::here("data/laika.jpg"))
 
@@ -378,8 +309,115 @@ launches %>%
 ```
 
 
+
+# Slide 3
+
+```{r}
+
+
+space_race_mission_success <- launches %>% 
+  filter(state_code %in% c("US", "SU", "RU")) %>%
+  filter(launch_year < 1970) %>% 
+  group_by(launch_year, country_name, category) %>% 
+  summarise(n_missions = n()) %>% 
+  mutate(prc_missions = round(n_missions/sum(n_missions)*100,2)) %>% 
+  ggplot(aes(x = country_name,
+              y = n_missions))+
+  geom_col(aes(fill = category))+
+  geom_text(aes(x = country_name,
+                y = n_missions,
+                label = paste0(prc_missions,"%"),
+                group = category),
+            position=position_stack(vjust=0.5))+
+  theme_minimal()+
+  labs(title = "1957 - 1969 Space Race success Rate",
+       x = "",
+       y = "launches/year",
+       fill = "")+
+  facet_grid(~launch_year)+
+  scale_fill_manual(label = c("Failed Mission", "Succesful Mission"),
+                    values = c("tomato","springgreen4"))+
+  theme(axis.text.x = element_text(angle= 45, ))
+
+space_race_mission_success
+```
+
+# Slide 4
+
+```{r}
+age <- astronauts %>% 
+  mutate(age_at_mission = year_of_mission - year_of_birth) %>% 
+  select(age_at_mission, year_of_mission, year_of_birth, name) %>%
+  mutate(decade = case_when((year_of_mission >= 1960 & year_of_mission < 1970) ~ "1960s",
+                            (year_of_mission >= 1970 & year_of_mission < 1980) ~ "1970s",
+                            (year_of_mission >= 1980 & year_of_mission < 1990) ~ "1980s",
+                            (year_of_mission >= 1990 & year_of_mission < 2000) ~ "1990s",
+                            (year_of_mission >= 2000 & year_of_mission < 2010) ~ "2000s",
+                            (year_of_mission >= 2010 & year_of_mission < 2020) ~ "2010s"))
+
+age_first <- age %>% 
+  group_by(name) %>% 
+  summarise(age_at_mission = min(age_at_mission), decade)
+
+#age at their first mission, when they become astronauts
+age_first_plot <- age_first %>% 
+  ggplot(aes( x = age_at_mission, fill=decade )) +
+  geom_histogram()+
+  labs(title = "Astronauts Have Started Their Career Later Overtime",
+       subtitle = "Age taken for each astronaut at the time of their first mission",
+       x="Age at Mission",
+       y="Number of Austronauts") +
+  facet_wrap(~decade)+
+  theme_minimal()
+
+
+#general age distribution in the industry
+age_plot <- age %>% 
+  ggplot(aes( x = age_at_mission, fill=decade )) +
+  geom_histogram() +
+  labs(title = "Astronauts Have Gotten Older Overtime",
+       subtitle = "Age taken for each astronaut at time of every mission",
+        x="Age at Mission",
+       y="Number of Austronauts") +
+  theme_minimal() +
+  facet_wrap(~decade)
+ 
+age_first_plot / age_plot
+```
+
+# Slide 5
+
+```{r }
+
+gender_count <- astronauts %>% 
+    group_by(sex, year_of_mission) %>% 
+    count(year_of_mission)
+
+female_male <- gender_count %>% 
+  ggplot(aes(x = year_of_mission, y = n, fill = sex)) +
+  geom_col() +
+  labs(title = "Women Start Going to Space in the 80s",
+       subtitle = "Data taken for each austronaut at time of every mission",
+       x="Year of Mission",
+       y="Number of Austronauts")+
+  theme_minimal()
+
+female_male_annotated <- female_male + 
+  annotate("text", x = 1965, y = 25, label = "Valentina Tereshkova", size = 3) + 
+  annotate("segment", x = 1965, xend = 1963, y = 23,  yend = 6, colour = "black", size = 0.5 , arrow = arrow() )
+
+female_male_annotated + scale_x_continuous(breaks=seq(1960,2020,5)) + 
+  geom_text(aes(label = n), vjust = -0.2, size =4)
+    
+```
+
+# Slide 5
+
+
+
 # Slide
-```{r space walk record holders, echo=FALSE}
+
+```{r space walk record holders, fig.align='center', fig.height= 5, fig.width= 11, echo=FALSE}
 
 astronauts %>% 
   group_by(name) %>% 
@@ -405,16 +443,13 @@ astronauts %>%
 
 ```
 
-
 # Slide
-US Launches 
 
-1966: Peaked state launches
-1986: Challenger Explosion
-1989: Private commercial Launches starts
-2012: Barely any state launches
+US Launches
 
-```{r,fig.align='center', fig.height= 5, fig.width= 11}
+1966: Peaked state launches 1986: Challenger Explosion 1989: Private commercial Launches starts 2012: Barely any state launches
+
+```{r }
  launches %>% 
   filter(state_code == "US") %>% 
   mutate(agency_type = ifelse(as.character(agency_type) == "startup", "private", as.character(agency_type))) %>%  # combine startup and private
@@ -455,12 +490,11 @@ US Launches
 
 ```
 
-General: High spending/budget during Space Race. Drastic decrease of spending/budget once space is over. 
-US-USSR Space Race: Budget higher than actual spending (underbudget), NASA is too ambitious 
-2012 paused launches: Budget are increasing, ...
+General: High spending/budget during Space Race. Drastic decrease of spending/budget once space is over. US-USSR Space Race: Budget higher than actual spending (underbudget), NASA is too ambitious 2012 paused launches: Budget are increasing, ...
 
-# Slide 
-```{r,fig.align='center', fig.height= 5, fig.width= 11}
+# Slide
+
+```{r}
 # Import and clean Nasa Spending Data
 nasa_spending <- vroom(here::here("data","nasa_budget.csv"))
 nasa_spending <- nasa_spending %>% 
@@ -492,7 +526,5 @@ nasa_spending %>%
   theme_minimal()
 
 ```
-state and private launches success/failure rate (spaceX)
-NASA fails, budget cut, 
-blow stuff up cheaper
 
+state and private launches success/failure rate (spaceX) NASA fails, budget cut, blow stuff up cheaper
