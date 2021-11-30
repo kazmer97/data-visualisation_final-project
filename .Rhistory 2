@@ -1,0 +1,504 @@
+launches < - readr::read_csv('https://raw.githubusercontent.com/fordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv')
+launches < - readr::read_csv('https://raw.githubusercontent.com/fordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv')
+launches < - readr::read_csv('https://raw.githubusercontent.com/fordatascience/tidytuesday/data/2019/2019-01-15/launches.csv')
+launches < - readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv')
+launches < - readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv')
+launches < - readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv')
+launches < - readr::vroom('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv')
+launches < - readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv')
+agencies < - readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/agencies.csv")
+astronauts <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv')
+agencies < - readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/agencies.csv")
+agencies < - readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/ agencies.csv")
+agencies < - readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/agencies.csv")
+astronauts <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv')
+agencies < - readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/agencies.csv")
+agencies < - readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/agencies.csv", header = TRUE)
+agencies < - readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv", header = TRUE)
+launches <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv")
+agencies <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/agencies.csv")
+View(launches)
+View(agencies)
+View(astronauts)
+wine1 <- readr::read_csv(here::here("wine_data","wine_info.csv"))
+wine2 <- readr::read_csv(here::here("wine_data","winemag-data_first150k.csv"))
+View(wine2)
+View(wine1)
+astronauts <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv')
+launches <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv")
+agencies <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/agencies.csv")
+skimr::skim(astronauts)
+library(skimr)
+library(skimr)
+library(vroom)
+library(tidyverse)
+library(dplyr)
+astronauts <- vroom('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv')
+launches <- vroom("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/launches.csv")
+agencies <- vroom("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-01-15/agencies.csv")
+skim(astronauts)
+skim(launches)
+skim(agencies)
+skim(astronauts)
+skim(launches)
+skim(agencies)
+View(agencies)
+View(astronauts)
+View(launches)
+space_race <- launches
+space_race <- space_race %>%
+left_join(., agencies, by = c("agency" = "agency"))
+View(space_race)
+space_race <- launches
+View(space_race)
+unique(space_race$agency)
+space_race <- launches %>%
+group_by(launch_year, agency) %>%
+summarise(num_launches = n()) %>%
+ungroup()
+launchs_per_year <- ggplot(space_race, aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = agency))+
+geom_line(aes(color = agency))+
+theme_minimal()
+launchs_per_year
+space_race <- launches %>%
+group_by(launch_year, agency) %>%
+summarise(num_launches = n()) %>%
+ungroup() %>%
+filter(state_code %in% c("US", "SU", "RU"))
+space_race <- launches %>%
+group_by(launch_year, agency) %>%
+summarise(num_launches = n()) %>%
+ungroup() %>%
+filter(state_code %in% c("US", "SU", "RU"))
+space_race <- launches %>%
+group_by(launch_year, agency) %>%
+summarise(state_code, num_launches = n()) %>%
+ungroup() %>%
+filter(state_code %in% c("US", "SU", "RU"))
+launchs_per_year <- ggplot(space_race, aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = agency))+
+geom_line(aes(color = agency))+
+theme_minimal()
+launchs_per_year
+launchs_per_year <- ggplot(space_race, aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = agency))+
+geom_line(aes(color = agency))+
+theme_minimal()
+launchs_per_year
+space_race <- launches %>%
+filter(state_code %in% c("US", "SU", "RU")) %>%
+group_by(launch_year, agency) %>%
+summarise(state_code, num_launches = n()) %>%
+ungroup()
+launchs_per_year <- ggplot(space_race, aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = agency))+
+geom_line(aes(color = agency))+
+theme_minimal()
+launchs_per_year
+launchs_per_year <- ggplot(space_race, aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+theme_minimal()
+launchs_per_year
+space_race <- launches %>%
+# filter(state_code %in% c("US", "SU", "RU")) %>%
+group_by(launch_year, agency) %>%
+summarise(state_code, num_launches = n()) %>%
+ungroup()
+launchs_per_year <- ggplot(space_race, aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+theme_minimal()
+launchs_per_year
+launches <- launches %>%
+mutate(agency = case_when(NA ~ state_code,
+TRUE ~ agency))
+space_race <- launches %>%
+# filter(state_code %in% c("US", "SU", "RU")) %>%
+group_by(launch_year, agency) %>%
+summarise(state_code, num_launches = n()) %>%
+ungroup()
+launchs_per_year <- ggplot(space_race, aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+theme_minimal()
+launchs_per_year
+install.packages("gghighlight")
+library(gghighlight)
+launchs_per_year <- ggplot(space_race, aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code == "US")
+theme_minimal()
+launchs_per_year <- ggplot(space_race, aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code == "US")+
+theme_minimal()
+launchs_per_year
+library(plotly)
+ggplotly(launchs_per_year)
+launchs_per_year_US_SU <- ggplot(space_race, aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code %in% c("US","SU","RU"))+
+theme_minimal()
+ggplotly(launchs_per_year_US_SU)
+launchs_per_year_US_SU
+launchs_per_year_US_SU <- space_race %>%
+filter(state_code %in% c("US", "SU", "RU")) %>%
+ggplot( aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code %in% c("US","SU","RU"))+
+theme_minimal()
+launchs_per_year_US_SU
+launchs_per_year_non_us_su
+launchs_per_year_non_us_su <- space_race %>%
+ggplot( aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code %in% !c("US","SU","RU"))+
+theme_minimal()
+launchs_per_year_non_us_su <- space_race %>%
+ggplot( aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code %in% c("US","SU","RU"))+
+theme_minimal()
+launchs_per_year_non_us_su <- space_race %>%
+ggplot( aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code %in% c("US","SU","RU"))+
+theme_minimal()
+launches <- launches %>%
+mutate(agency = case_when(NA ~ state_code,
+TRUE ~ agency))
+space_race <- launches %>%
+# filter(state_code %in% c("US", "SU", "RU")) %>%
+group_by(launch_year, agency) %>%
+summarise(state_code, num_launches = n()) %>%
+ungroup()
+launches <- launches %>%
+mutate(agency = case_when(agency == NA ~ state_code,
+TRUE ~ agency))
+space_race <- launches %>%
+# filter(state_code %in% c("US", "SU", "RU")) %>%
+group_by(launch_year, agency) %>%
+summarise(state_code, num_launches = n()) %>%
+ungroup()
+launches <- launches %>%
+mutate(agency = case_when(is.na(agency) ~ state_code,
+TRUE ~ agency))
+space_race <- launches %>%
+# filter(state_code %in% c("US", "SU", "RU")) %>%
+group_by(launch_year, agency) %>%
+summarise(state_code, num_launches = n()) %>%
+ungroup()
+launchs_per_year_non_us_su <- space_race %>%
+ggplot( aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code %in% c("US","SU","RU"))+
+theme_minimal()
+launchs_per_year_non_us_su <- space_race %>%
+ggplot(aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code %in% c("US","SU","RU"))+
+theme_minimal()
+launchs_per_year_US_SU <- space_race %>%
+filter(state_code %in% c("US", "SU", "RU")) %>%
+ggplot( aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code %in% c("US","SU","RU"))+
+theme_minimal()
+launchs_per_year_US_SU
+launchs_per_year_non_us_su
+launchs_per_year_non_us_su <- space_race %>%
+ggplot(aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(!state_code %in% c("US","SU","RU"))+
+theme_minimal()
+launchs_per_year_non_us_su
+launchs_per_year_US_SU / launchs_per_year_non_us_su
+library(patchwork)
+launchs_per_year_US_SU / launchs_per_year_non_us_su
+launchs_per_year_US_SU | launchs_per_year_non_us_su
+launches <- launches %>%
+mutate(agency = case_when(is.na(agency) ~ state_code,
+TRUE ~ agency))
+space_race <- launches %>%
+# filter(state_code %in% c("US", "SU", "RU")) %>%
+group_by(launch_year, agency) %>%
+summarise(state_code, num_launches = n()) %>%
+ungroup()
+launchs_per_year_US_SU <- space_race %>%
+filter(state_code %in% c("US", "SU", "RU")) %>%
+ggplot( aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code %in% c("US","SU","RU"))+
+theme_minimal()
+launchs_per_year_non_us_su <- space_race %>%
+ggplot(aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(!state_code %in% c("US","SU","RU"))+
+theme_minimal()
+launchs_per_year_US_SU | launchs_per_year_non_us_su
+launches <- launches %>%
+mutate(agency = case_when(is.na(agency) ~ state_code,
+TRUE ~ agency))
+space_race <- launches %>%
+# filter(state_code %in% c("US", "SU", "RU")) %>%
+group_by(launch_year, agency) %>%
+summarise(state_code, num_launches = n()) %>%
+ungroup()
+launchs_per_year_US_SU <- space_race %>%
+filter(state_code %in% c("US", "SU", "RU")) %>%
+ggplot( aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code %in% c("US","SU","RU"))+
+theme_minimal()
+launchs_per_year_non_us_su <- space_race %>%
+ggplot(aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(!state_code %in% c("US","SU","RU"))+
+theme_minimal()
+launchs_per_year_US_SU | launchs_per_year_non_us_su
+launches <- launches %>%
+mutate(agency = case_when(is.na(agency) ~ state_code,
+TRUE ~ agency))
+space_race <- launches %>%
+# filter(state_code %in% c("US", "SU", "RU")) %>%
+group_by(launch_year, agency) %>%
+summarise(state_code, num_launches = n()) %>%
+ungroup()
+launchs_per_year_US_SU <- space_race %>%
+filter(state_code %in% c("US", "SU", "RU")) %>%
+ggplot( aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code %in% c("US","SU","RU"))+
+theme_minimal()
+launchs_per_year_non_us_su <- space_race %>%
+ggplot(aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(!state_code %in% c("US","SU","RU"))+
+theme_minimal()
+launchs_per_year_US_SU | launchs_per_year_non_us_su
+launchs_per_year_non_us_su <- space_race %>%
+ggplot(aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(!state_code %in% c("US","SU","RU"))+
+theme_minimal()+
+labs(title = "Countries joining Space Exploration",
+x = "",
+y = "launches/year")
+launchs_per_year_US_SU <- space_race %>%
+filter(state_code %in% c("US", "SU", "RU")) %>%
+ggplot( aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code %in% c("US","SU","RU"))+
+theme_minimal()+
+labs(title = "United States and Soviet Union (Russia) Space Race",
+x = "",
+y = "launches/year")
+launchs_per_year_US_SU | launchs_per_year_non_us_su
+mission_success <- vroom(here::here("data","Space_Corrected.csv"))
+skim(mission_success)
+View(mission_success)
+mission_success <- select(mission_success, -c(1,2))
+launchs_per_year_US_SU <- space_race %>%
+filter(state_code %in% c("US", "SU", "RU")) %>%
+ggplot( aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(state_code %in% c("US","SU","RU"))+
+theme_minimal()+
+labs(title = "United States and Soviet Union (Russia) Space Race",
+x = "",
+y = "launches/year")+
+scale_color_brewer(palette = "YIGnBu")
+launchs_per_year_non_us_su <- space_race %>%
+ggplot(aes(x = launch_year,
+y = num_launches))+
+geom_point(aes(color = state_code))+
+geom_line(aes(color = state_code))+
+gghighlight(!state_code %in% c("US","SU","RU"))+
+theme_minimal()+
+labs(title = "Countries joining Space Exploration",
+x = "",
+y = "launches/year")+
+scale_color_brewer(palette = "YIGnBu")
+launchs_per_year_US_SU | launchs_per_year_non_us_su
+unique(launches$state_code)
+library(countrycode)
+install.packages("countrycode")
+library(countrycode)
+?countrycode()
+?countrycode()
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'iso3',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'wb',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'genc2c',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'gwc',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'gwn',
+destination = 'country.name'))
+mission_success <- select(mission_success, -c(1,2))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'gwn',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'imf',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'imf',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'p4n',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'p4c',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'un',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'ar5',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'wvs',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'iso2c',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'gaul',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'v',
+destination = 'country.name'))
+launches <- launches %>%
+mutate(country_name = countrycode(state_code,
+origin = 'ccTLD',
+destination = 'country.name'))
+library(ISOcodes)
+install.packages("ISOcodes")
+library(ISOcodes)
+?ISOcodes
+??ISOcodes
+ISO_3166_3
+ISO_3166_2
+ISO_3166_3
+unique(launches$state_code)
+country_names <-(US = "United States",
+country_names <- c(US = "United States",
+'F'  = "France",
+BR = "Brazil",
+CN = "China",
+I = 'italy',
+I-ELDO =  "NA",
+country_names <- c(US = "United States",
+'F'  = "France",
+BR = "Brazil",
+CN = "China",
+I = 'italy',
+I-ELDO =  "NA",
+country_names <- c(US = "United States",
+'F'  = "France",
+BR = "Brazil",
+CN = "China",
+I = "italy",
+I-ELDO =  "NA",
+country_names <- c(US = "United States",
+'F'  = "France",
+BR = "Brazil",
+CN = "China",
+I = "italy",
+'I-ELDO' =  "NA",
+I-ESA = "European Space Agency",
+country_names <- c(US = "United States",
+'F'  = "France",
+BR = "Brazil",
+CN = "China",
+I = "italy",
+'I-ELDO' =  "NA",
+'I-ESA' = "European Space Agency",
+RU  = "Russia",
+IR = "Iran",
+IL = "Isreal",
+J = "Japan",
+IN = "India",
+KR = "North Korea",
+KP = "South Korea",
+SU = "North Korean Space Agency",
+UK = "United Kingdom",
+CYM = "Cayman Islands")
+launches %>%
+mutate(country_name = country_names[state_code])
+launches %>%
+mutate(country_name = country_names[state_code])
+launches <- launches %>%
+mutate(country_name = country_names[state_code])
